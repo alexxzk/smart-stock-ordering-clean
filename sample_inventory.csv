@@ -1,0 +1,11 @@
+item_name,current_stock,reorder_point,unit_cost,supplier,last_updated
+Coffee,100,50,2.50,Coffee Supplier Inc,2024-01-15
+Milk,80,40,1.20,Dairy Farm Co,2024-01-15
+Sugar,200,100,0.80,Sweet Supplies Ltd,2024-01-15
+Flour,150,75,1.50,Bakery Basics,2024-01-15
+Eggs,120,60,2.00,Fresh Eggs Farm,2024-01-15
+Butter,90,45,3.20,Dairy Farm Co,2024-01-15
+Vanilla Extract,50,25,8.00,Baking Essentials,2024-01-15
+Chocolate Chips,180,90,4.50,Sweet Supplies Ltd,2024-01-15
+Baking Soda,300,150,0.50,Bakery Basics,2024-01-15
+Salt,250,125,0.30,Bakery Basics,2024-01-15 
