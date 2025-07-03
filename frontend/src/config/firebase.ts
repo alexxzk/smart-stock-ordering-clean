@@ -1,12 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { config } from './env';
+import { config } from './env'; // Only import ONCE
 
-import { config } from './env'; console.log('FIREBASE CONFIG:', config.firebase); // <-- Add this line
+console.log('FIREBASE CONFIG:', config.firebase); // Log it ONCE
 
-// Use the config object for all env variables
-const firebaseConfig = config.firebase;
+const firebaseConfig = config.firebase; // Use it here
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
