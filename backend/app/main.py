@@ -61,12 +61,17 @@ async def add_performance_logging(request, call_next):
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Frontend URLs
+    allow_origins=[
+        "http://localhost:5173", 
+        "http://localhost:3000",
+        "https://smart-stock-ordering.vercel.app",  # Vercel frontend
+        os.getenv("FRONTEND_URL", ""),  # Allow custom frontend URL via env var
+        "https://smart-stock-ordering-clean-22.onrender.com",  # Your frontend URL
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # Add Gzip compression for better performance
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
