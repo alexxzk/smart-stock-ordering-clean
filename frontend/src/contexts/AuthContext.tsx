@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '../config/firebase'
 
-const DEV_MODE = (import.meta as any).env?.VITE_DEV_MODE === 'true' || true // Default to true for development
+const DEV_MODE = (import.meta as any).env?.VITE_DEV_MODE === 'true' // Only true when explicitly set
 
 interface AuthContextType {
   currentUser: User | null

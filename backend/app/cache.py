@@ -69,8 +69,11 @@ def cached(ttl: Optional[int] = None, key_prefix: str = ""):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            # Create cache key
-            cache_key = f"{key_prefix}:{func.__name__}:{hash(str(args) + str(kwargs))}"
+            # Create cache key with module and function info to prevent collisions
+            import hashlib
+            args_str = str(args) + str(sorted(kwargs.items()))
+            hash_value = hashlib.md5(args_str.encode('utf-8')).hexdigest()
+            cache_key = f"{key_prefix}:{func.__module__}:{func.__name__}:{hash_value}"
             
             # Try to get from cache
             cached_result = cache.get(cache_key)

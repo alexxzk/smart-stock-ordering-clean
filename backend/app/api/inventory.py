@@ -190,7 +190,7 @@ async def create_inventory_item(
         
         # Single Firestore operation - just add the document
         firestore_start = time.time()
-        doc_ref = db.collection("inventory").add(item_data)
+        update_time, doc_ref = db.collection("inventory").add(item_data)
         firestore_end = time.time()
         
         # Calculate timing
@@ -206,7 +206,7 @@ async def create_inventory_item(
         
         # Return response immediately without extra get operation
         return {
-            "id": doc_ref[1].id,
+            "id": doc_ref.id,
             **item_data
         }
         
