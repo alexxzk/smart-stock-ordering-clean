@@ -58,10 +58,26 @@ async def add_performance_logging(request, call_next):
     
     return response
 
-# CORS middleware
+# CORS middleware - Updated for deployment flexibility
+allowed_origins = [
+    "http://localhost:5173", 
+    "http://localhost:3000",
+    "http://localhost:5174",  # Alternative Vite port
+]
+
+# Add production domains if available
+render_frontend = os.getenv("FRONTEND_URL")
+if render_frontend:
+    allowed_origins.append(render_frontend)
+
+# For debugging, you can temporarily allow all origins
+# REMOVE THIS IN PRODUCTION!
+if DEV_MODE:
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Frontend URLs
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
