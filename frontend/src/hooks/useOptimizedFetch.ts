@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-interface UseOptimizedFetchOptions<T> {
+interface UseOptimizedFetchOptions {
   url: string;
   dependencies?: any[];
   cacheTime?: number;
@@ -25,7 +25,7 @@ export function useOptimizedFetch<T>({
   cacheTime = 60000, // 1 minute default
   retryAttempts = 3,
   retryDelay = 1000
-}: UseOptimizedFetchOptions<T>): UseOptimizedFetchResult<T> {
+}: UseOptimizedFetchOptions): UseOptimizedFetchResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

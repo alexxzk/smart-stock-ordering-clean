@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ShoppingCart, Brain, AlertTriangle, CheckCircle, Clock, Truck } from 'lucide-react'
 
 interface AIRecommendation {
@@ -121,7 +121,7 @@ const mockOrders: SupplierOrder[] = [
 ]
 
 export default function Orders() {
-  const [aiRecommendations, setAiRecommendations] = useState<AIRecommendation[]>(mockAIRecommendations)
+  const [aiRecommendations] = useState<AIRecommendation[]>(mockAIRecommendations)
   const [orders, setOrders] = useState<SupplierOrder[]>(mockOrders)
   const [selectedRecommendations, setSelectedRecommendations] = useState<string[]>([])
   const [isGeneratingOrder, setIsGeneratingOrder] = useState(false)
