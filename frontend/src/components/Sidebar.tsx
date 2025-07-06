@@ -6,7 +6,8 @@ import {
   ShoppingCart,
   Coffee,
   Building,
-  Zap
+  Zap,
+  Link
 } from 'lucide-react'
 
 const navigation = [
@@ -15,6 +16,7 @@ const navigation = [
   { name: 'Inventory', href: '/inventory', icon: Package },
   { name: 'Suppliers', href: '/suppliers', icon: Building },
   { name: 'Integrations', href: '/integrations', icon: Zap },
+  { name: 'Supplier Integrations', href: '/supplier-integrations', icon: Link },
   { name: 'Orders', href: '/orders', icon: ShoppingCart },
 ]
 
