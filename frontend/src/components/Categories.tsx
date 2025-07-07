@@ -14,7 +14,6 @@ import {
   Wifi,
   WifiOff,
   Building2,
-  Copy,
   Download,
   Upload
 } from 'lucide-react';
@@ -231,19 +230,7 @@ const Categories: React.FC = () => {
     };
   };
 
-  const flattenCategories = (categories: Category[]): Category[] => {
-    const result: Category[] = [];
-    const flatten = (cats: Category[]) => {
-      cats.forEach(cat => {
-        result.push(cat);
-        if (cat.children) {
-          flatten(cat.children);
-        }
-      });
-    };
-    flatten(categories);
-    return result;
-  };
+
 
   const generateCategoriesFromTemplate = (template: BusinessTemplate): Category[] => {
     return template.categories.map((cat, index) => ({
