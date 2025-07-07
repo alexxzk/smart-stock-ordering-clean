@@ -10,6 +10,7 @@ import Integrations from './pages/Integrations'
 import SupplierIntegrations from './pages/SupplierIntegrations'
 import POSIntegrations from './pages/POSIntegrations'
 import Orders from './pages/Orders'
+import Categories from './components/Categories'
 import Login from './pages/Login'
 import TestPage from './pages/TestPage'
 import DebugTest from './pages/DebugTest'
@@ -34,6 +35,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="forecasting" element={<Forecasting />} />
             <Route path="inventory" element={<Inventory />} />
+            <Route path="categories" element={<Categories />} />
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="integrations" element={<Integrations />} />
             <Route path="supplier-integrations" element={<SupplierIntegrations />} />

@@ -23,6 +23,7 @@ from app.api import excel_processor as excel_router
 from app.api import suppliers as suppliers_router
 from app.api import supplier_integrations as supplier_integrations_router
 from app.api import users as users_router
+from app.api import categories as categories_router
 from app.routes import integrations as integrations_router
 from app.firebase_init import get_firestore_client
 from app.api.cache import router as cache_router
@@ -155,6 +156,12 @@ app.include_router(
     users_router.router, 
     prefix="/api/users", 
     tags=["Users"],
+    dependencies=[Depends(verify_token)]
+)
+app.include_router(
+    categories_router.router, 
+    prefix="/api", 
+    tags=["Categories"],
     dependencies=[Depends(verify_token)]
 )
 app.include_router(

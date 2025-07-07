@@ -8,13 +8,15 @@ import {
   Building,
   Zap,
   Link,
-  Activity
+  Activity,
+  Folder
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
   { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
   { name: 'Inventory', href: '/inventory', icon: Package },
+  { name: 'Categories', href: '/categories', icon: Folder },
   { name: 'Suppliers', href: '/suppliers', icon: Building },
   { name: 'Integrations', href: '/integrations', icon: Zap },
   { name: 'Supplier Integrations', href: '/supplier-integrations', icon: Link },
