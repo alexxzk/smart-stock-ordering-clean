@@ -10,7 +10,9 @@ import {
   Edit,
   Save,
   X,
-  RefreshCw
+  RefreshCw,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import './Categories.css';
 
@@ -44,6 +46,8 @@ const Categories: React.FC = () => {
   const [categoryTree, setCategoryTree] = useState<CategoryTree | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
+  const [usingMockData, setUsingMockData] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
@@ -59,40 +63,288 @@ const Categories: React.FC = () => {
   const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
   const icons = ['📦', '🍽️', '🥕', '🧽', '📋', '🔧', '💼', '🏠'];
 
+  // Mock data for when backend is unavailable
+  const mockCategories: Category[] = [
+    {
+      id: '1',
+      name: 'Food & Beverages',
+      description: 'All food and beverage items',
+      parent_id: undefined,
+      color: '#FF6B6B',
+      icon: '🍽️',
+      sort_order: 0,
+      is_active: true,
+      level: 0,
+      path: 'Food & Beverages',
+      item_count: 45,
+      subcategory_count: 4,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      created_by: 'system',
+      children: [
+        {
+          id: '2',
+          name: 'Fruits & Vegetables',
+          description: 'Fresh produce',
+          parent_id: '1',
+          color: '#4ECDC4',
+          icon: '🥕',
+          sort_order: 0,
+          is_active: true,
+          level: 1,
+          path: 'Food & Beverages/Fruits & Vegetables',
+          item_count: 18,
+          subcategory_count: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system'
+        },
+        {
+          id: '3',
+          name: 'Dairy & Eggs',
+          description: 'Milk, cheese, eggs',
+          parent_id: '1',
+          color: '#45B7D1',
+          icon: '🥛',
+          sort_order: 1,
+          is_active: true,
+          level: 1,
+          path: 'Food & Beverages/Dairy & Eggs',
+          item_count: 12,
+          subcategory_count: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system'
+        },
+        {
+          id: '4',
+          name: 'Beverages',
+          description: 'Drinks and beverages',
+          parent_id: '1',
+          color: '#6C5CE7',
+          icon: '🥤',
+          sort_order: 2,
+          is_active: true,
+          level: 1,
+          path: 'Food & Beverages/Beverages',
+          item_count: 15,
+          subcategory_count: 2,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system',
+          children: [
+            {
+              id: '5',
+              name: 'Coffee',
+              description: 'Coffee and coffee products',
+              parent_id: '4',
+              color: '#6C5CE7',
+              icon: '☕',
+              sort_order: 0,
+              is_active: true,
+              level: 2,
+              path: 'Food & Beverages/Beverages/Coffee',
+              item_count: 8,
+              subcategory_count: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              created_by: 'system'
+            },
+            {
+              id: '6',
+              name: 'Tea',
+              description: 'Tea and tea products',
+              parent_id: '4',
+              color: '#00B894',
+              icon: '🍵',
+              sort_order: 1,
+              is_active: true,
+              level: 2,
+              path: 'Food & Beverages/Beverages/Tea',
+              item_count: 7,
+              subcategory_count: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              created_by: 'system'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: '7',
+      name: 'Cleaning Supplies',
+      description: 'Cleaning and maintenance products',
+      parent_id: undefined,
+      color: '#00B894',
+      icon: '🧽',
+      sort_order: 1,
+      is_active: true,
+      level: 0,
+      path: 'Cleaning Supplies',
+      item_count: 12,
+      subcategory_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      created_by: 'system'
+    },
+    {
+      id: '8',
+      name: 'Office Supplies',
+      description: 'Office equipment and supplies',
+      parent_id: undefined,
+      color: '#0984E3',
+      icon: '📋',
+      sort_order: 2,
+      is_active: true,
+      level: 0,
+      path: 'Office Supplies',
+      item_count: 8,
+      subcategory_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      created_by: 'system'
+    }
+  ];
+
   useEffect(() => {
     fetchCategories();
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchCategories, 30000);
+    // Auto-refresh every 60 seconds (reduced frequency)
+    const interval = setInterval(fetchCategories, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const testBackendConnection = async (): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/health', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response.ok;
+    } catch {
+      try {
+        // Try alternative health check
+        const response = await fetch('/api/categories', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        return response.status !== 0; // Any response means backend is reachable
+      } catch {
+        return false;
+      }
+    }
+  };
+
+  const buildCategoryTree = (categories: Category[]): CategoryTree => {
+    const categoryMap = new Map<string, Category>(categories.map(cat => [cat.id, { ...cat, children: [] as Category[] }]));
+    const rootCategories: Category[] = [];
+
+    categories.forEach(category => {
+      const catWithChildren = categoryMap.get(category.id)!;
+      
+      if (category.parent_id && categoryMap.has(category.parent_id)) {
+        const parent = categoryMap.get(category.parent_id)!;
+        if (!parent.children) parent.children = [];
+        parent.children.push(catWithChildren);
+      } else {
+        rootCategories.push(catWithChildren);
+      }
+    });
+
+    const calculateDepth = (cats: Category[]): number => {
+      return Math.max(0, ...cats.map(cat => 
+        cat.children ? 1 + calculateDepth(cat.children) : 0
+      ));
+    };
+
+    return {
+      categories: rootCategories,
+      total_categories: categories.length,
+      max_depth: calculateDepth(rootCategories)
+    };
+  };
+
+  const flattenCategories = (categories: Category[]): Category[] => {
+    const result: Category[] = [];
+    const flatten = (cats: Category[]) => {
+      cats.forEach(cat => {
+        result.push(cat);
+        if (cat.children) {
+          flatten(cat.children);
+        }
+      });
+    };
+    flatten(categories);
+    return result;
+  };
 
   const fetchCategories = async () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Test backend connection first
+      const backendOnline = await testBackendConnection();
+      setIsOnline(backendOnline);
+
+      if (!backendOnline) {
+        // Use mock data when backend is offline
+        console.warn('Backend unavailable, using mock data');
+        setUsingMockData(true);
+        const tree = buildCategoryTree(flattenCategories(mockCategories));
+        setCategories(flattenCategories(mockCategories));
+        setCategoryTree(tree);
+        setLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem('auth_token');
       
-      const [categoriesResponse, treeResponse] = await Promise.all([
-        fetch('/api/categories', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/categories/tree', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
+      // Try to fetch from API
+      const categoriesResponse = await fetch('/api/categories', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
 
-      if (!categoriesResponse.ok || !treeResponse.ok) {
-        throw new Error('Failed to fetch categories');
+      if (!categoriesResponse.ok) {
+        throw new Error(`API Error: ${categoriesResponse.status} ${categoriesResponse.statusText}`);
       }
 
       const categoriesData = await categoriesResponse.json();
-      const treeData = await treeResponse.json();
+      
+      // Try to fetch tree structure
+      let treeData;
+      try {
+        const treeResponse = await fetch('/api/categories/tree', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        
+        if (treeResponse.ok) {
+          treeData = await treeResponse.json();
+        } else {
+          // Build tree from flat data if tree endpoint fails
+          treeData = buildCategoryTree(categoriesData);
+        }
+      } catch {
+        // Build tree from flat data if tree endpoint fails
+        treeData = buildCategoryTree(categoriesData);
+      }
 
       setCategories(categoriesData);
       setCategoryTree(treeData);
+      setUsingMockData(false);
+      setIsOnline(true);
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load categories');
       console.error('Fetch error:', err);
+      
+      // Fallback to mock data on any error
+      setUsingMockData(true);
+      setIsOnline(false);
+      const tree = buildCategoryTree(flattenCategories(mockCategories));
+      setCategories(flattenCategories(mockCategories));
+      setCategoryTree(tree);
+      
+      setError(`Backend unavailable: ${err instanceof Error ? err.message : 'Unknown error'}. Using demo data.`);
     } finally {
       setLoading(false);
     }
@@ -106,13 +358,56 @@ const Categories: React.FC = () => {
       return;
     }
 
+    if (usingMockData) {
+      // Simulate adding to mock data
+      const newId = Date.now().toString();
+      const parentCategory = categories.find(cat => cat.id === newCategory.parent_id);
+      const level = parentCategory ? parentCategory.level + 1 : 0;
+      const path = parentCategory ? `${parentCategory.path}/${newCategory.name}` : newCategory.name;
+      
+      const newCat: Category = {
+        id: newId,
+        name: newCategory.name,
+        description: newCategory.description,
+        parent_id: newCategory.parent_id || undefined,
+        color: newCategory.color,
+        icon: newCategory.icon,
+        sort_order: 0,
+        is_active: true,
+        level: level,
+        path: path,
+        item_count: 0,
+        subcategory_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        created_by: 'demo-user'
+      };
+
+      const updatedCategories = [...categories, newCat];
+      setCategories(updatedCategories);
+      setCategoryTree(buildCategoryTree(updatedCategories));
+      
+      // Reset form
+      setNewCategory({
+        name: '',
+        description: '',
+        parent_id: '',
+        color: '#3B82F6',
+        icon: '📦'
+      });
+      setShowAddForm(false);
+      
+      alert('Category added to demo data (changes will be lost on refresh)');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch('/api/categories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          ...(token && { Authorization: `Bearer ${token}` })
         },
         body: JSON.stringify({
           name: newCategory.name,
@@ -126,7 +421,7 @@ const Categories: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create category');
+        throw new Error(`Failed to create category: ${response.statusText}`);
       }
 
       // Reset form and refresh data
@@ -141,24 +436,31 @@ const Categories: React.FC = () => {
       await fetchCategories();
       
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to create category');
+      alert(`Failed to create category: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
   const handleUpdateCategory = async (categoryId: string) => {
+    if (usingMockData) {
+      alert('Demo mode: Changes will be lost on refresh');
+      setEditingRow(null);
+      setEditData({});
+      return;
+    }
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/categories/${categoryId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          ...(token && { Authorization: `Bearer ${token}` })
         },
         body: JSON.stringify(editData)
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update category');
+        throw new Error(`Failed to update category: ${response.statusText}`);
       }
 
       setEditingRow(null);
@@ -166,45 +468,59 @@ const Categories: React.FC = () => {
       await fetchCategories();
       
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update category');
+      alert(`Failed to update category: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
     if (!confirm('Are you sure you want to delete this category?')) return;
 
+    if (usingMockData) {
+      // Remove from mock data
+      const updatedCategories = categories.filter(cat => cat.id !== categoryId);
+      setCategories(updatedCategories);
+      setCategoryTree(buildCategoryTree(updatedCategories));
+      alert('Category removed from demo data (changes will be lost on refresh)');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/categories/${categoryId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete category');
+        throw new Error(`Failed to delete category: ${response.statusText}`);
       }
 
       await fetchCategories();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete category');
+      alert(`Failed to delete category: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
   const createSampleData = async () => {
+    if (usingMockData) {
+      alert('Already using demo data! This is sample data.');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('auth_token');
       const response = await fetch('/api/categories/sample-data', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create sample data');
+        throw new Error(`Failed to create sample data: ${response.statusText}`);
       }
 
       await fetchCategories();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to create sample data');
+      alert(`Failed to create sample data: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -386,7 +702,22 @@ const Categories: React.FC = () => {
       <div className="categories-header">
         <div className="header-left">
           <h1>Categories Management</h1>
-          <p>Organize your inventory with hierarchical categories</p>
+          <div className="header-status">
+            <p>Organize your inventory with hierarchical categories</p>
+            <div className="connection-status">
+              {isOnline ? (
+                <span className="status-online">
+                  <Wifi size={14} />
+                  {usingMockData ? 'Demo Mode' : 'Connected'}
+                </span>
+              ) : (
+                <span className="status-offline">
+                  <WifiOff size={14} />
+                  Offline - Demo Data
+                </span>
+              )}
+            </div>
+          </div>
         </div>
         <div className="header-actions">
           <button 
@@ -404,7 +735,7 @@ const Categories: React.FC = () => {
             <Plus size={16} />
             Add Category
           </button>
-          {categories.length === 0 && (
+          {categories.length === 0 && !usingMockData && (
             <button className="btn btn-secondary" onClick={createSampleData}>
               Create Sample Data
             </button>
@@ -417,6 +748,13 @@ const Categories: React.FC = () => {
           <AlertCircle size={16} />
           {error}
           <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
+
+      {usingMockData && (
+        <div className="demo-notice">
+          <AlertCircle size={16} />
+          <span>Demo Mode: You're viewing sample data. Changes will be lost on refresh.</span>
         </div>
       )}
 
@@ -513,7 +851,9 @@ const Categories: React.FC = () => {
 
               <div className="form-actions">
                 <button type="button" onClick={() => setShowAddForm(false)}>Cancel</button>
-                <button type="submit" className="btn-primary">Add Category</button>
+                <button type="submit" className="btn-primary">
+                  Add Category {usingMockData && '(Demo)'}
+                </button>
               </div>
             </form>
           </div>
