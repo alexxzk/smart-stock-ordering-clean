@@ -1,19 +1,19 @@
-from fastapi import APIRouter, HTTPException, Depends, Query, Path
+from fastapi import APIRouter, HTTPException, Query, Path
 from typing import List, Optional
 from ..models.category import (
     Category, CategoryCreate, CategoryUpdate, CategoryWithChildren, 
     CategoryTree, CategoryStats, CategoryBreadcrumb
 )
 from ..services.category_service import category_service
-from ..services.auth_service import get_current_user
-from ..models.auth import User
 
 router = APIRouter()
 
+# Default user ID for operations (since auth is handled at router level)
+DEFAULT_USER_ID = "system-user"
+
 @router.get("/categories", response_model=List[Category])
 async def get_all_categories(
-    include_inactive: bool = Query(False, description="Include inactive categories"),
-    current_user: User = Depends(get_current_user)
+    include_inactive: bool = Query(False, description="Include inactive categories")
 ):
     """Get all categories"""
     try:
@@ -24,8 +24,7 @@ async def get_all_categories(
 
 @router.get("/categories/tree", response_model=CategoryTree)
 async def get_category_tree(
-    include_inactive: bool = Query(False, description="Include inactive categories"),
-    current_user: User = Depends(get_current_user)
+    include_inactive: bool = Query(False, description="Include inactive categories")
 ):
     """Get complete category tree structure"""
     try:
@@ -36,8 +35,7 @@ async def get_category_tree(
 
 @router.get("/categories/root", response_model=List[Category])
 async def get_root_categories(
-    include_inactive: bool = Query(False, description="Include inactive categories"),
-    current_user: User = Depends(get_current_user)
+    include_inactive: bool = Query(False, description="Include inactive categories")
 ):
     """Get root categories (no parent)"""
     try:
@@ -48,8 +46,7 @@ async def get_root_categories(
 
 @router.get("/categories/{category_id}", response_model=Category)
 async def get_category(
-    category_id: str = Path(..., description="Category ID"),
-    current_user: User = Depends(get_current_user)
+    category_id: str = Path(..., description="Category ID")
 ):
     """Get a specific category by ID"""
     try:
@@ -63,8 +60,7 @@ async def get_category(
 @router.get("/categories/{category_id}/subcategories", response_model=List[Category])
 async def get_subcategories(
     category_id: str = Path(..., description="Parent category ID"),
-    include_inactive: bool = Query(False, description="Include inactive categories"),
-    current_user: User = Depends(get_current_user)
+    include_inactive: bool = Query(False, description="Include inactive categories")
 ):
     """Get subcategories of a parent category"""
     try:
@@ -75,8 +71,7 @@ async def get_subcategories(
 
 @router.get("/categories/{category_id}/breadcrumb", response_model=CategoryBreadcrumb)
 async def get_category_breadcrumb(
-    category_id: str = Path(..., description="Category ID"),
-    current_user: User = Depends(get_current_user)
+    category_id: str = Path(..., description="Category ID")
 ):
     """Get breadcrumb path for a category"""
     try:
@@ -89,8 +84,7 @@ async def get_category_breadcrumb(
 
 @router.get("/categories/stats", response_model=List[CategoryStats])
 async def get_category_stats(
-    category_id: Optional[str] = Query(None, description="Specific category ID for stats"),
-    current_user: User = Depends(get_current_user)
+    category_id: Optional[str] = Query(None, description="Specific category ID for stats")
 ):
     """Get statistics for categories"""
     try:
@@ -100,13 +94,10 @@ async def get_category_stats(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/categories", response_model=Category, status_code=201)
-async def create_category(
-    category_data: CategoryCreate,
-    current_user: User = Depends(get_current_user)
-):
+async def create_category(category_data: CategoryCreate):
     """Create a new category"""
     try:
-        category = await category_service.create_category(category_data, current_user.id)
+        category = await category_service.create_category(category_data, DEFAULT_USER_ID)
         return category
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -116,12 +107,11 @@ async def create_category(
 @router.put("/categories/{category_id}", response_model=Category)
 async def update_category(
     update_data: CategoryUpdate,
-    category_id: str = Path(..., description="Category ID"),
-    current_user: User = Depends(get_current_user)
+    category_id: str = Path(..., description="Category ID")
 ):
     """Update a category"""
     try:
-        category = await category_service.update_category(category_id, update_data, current_user.id)
+        category = await category_service.update_category(category_id, update_data, DEFAULT_USER_ID)
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
         return category
@@ -133,8 +123,7 @@ async def update_category(
 @router.delete("/categories/{category_id}", status_code=204)
 async def delete_category(
     category_id: str = Path(..., description="Category ID"),
-    move_items_to: Optional[str] = Query(None, description="Category ID to move items to"),
-    current_user: User = Depends(get_current_user)
+    move_items_to: Optional[str] = Query(None, description="Category ID to move items to")
 ):
     """Delete a category"""
     try:
@@ -146,17 +135,13 @@ async def delete_category(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Bulk operations
 @router.post("/categories/bulk", response_model=List[Category])
-async def create_categories_bulk(
-    categories_data: List[CategoryCreate],
-    current_user: User = Depends(get_current_user)
-):
+async def create_categories_bulk(categories_data: List[CategoryCreate]):
     """Create multiple categories at once"""
     try:
         created_categories = []
         for category_data in categories_data:
-            category = await category_service.create_category(category_data, current_user.id)
+            category = await category_service.create_category(category_data, DEFAULT_USER_ID)
             created_categories.append(category)
         return created_categories
     except ValueError as e:
@@ -165,9 +150,7 @@ async def create_categories_bulk(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/categories/sample-data", response_model=List[Category])
-async def create_sample_categories(
-    current_user: User = Depends(get_current_user)
-):
+async def create_sample_categories():
     """Create sample categories for testing"""
     try:
         sample_categories = [
@@ -188,7 +171,7 @@ async def create_sample_categories(
         
         created_categories = []
         for category_data in sample_categories:
-            category = await category_service.create_category(category_data, current_user.id)
+            category = await category_service.create_category(category_data, DEFAULT_USER_ID)
             created_categories.append(category)
         
         # Create some subcategories
@@ -206,7 +189,7 @@ async def create_sample_categories(
                 ]
                 
                 for sub_data in subcategories:
-                    sub_category = await category_service.create_category(sub_data, current_user.id)
+                    sub_category = await category_service.create_category(sub_data, DEFAULT_USER_ID)
                     created_categories.append(sub_category)
             
             if beverages_category:
@@ -219,19 +202,17 @@ async def create_sample_categories(
                 ]
                 
                 for sub_data in drink_subcategories:
-                    sub_category = await category_service.create_category(sub_data, current_user.id)
+                    sub_category = await category_service.create_category(sub_data, DEFAULT_USER_ID)
                     created_categories.append(sub_category)
         
         return created_categories
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Category validation endpoints
 @router.get("/categories/{category_id}/validate-parent")
 async def validate_parent_category(
     category_id: str = Path(..., description="Category ID"),
-    parent_id: str = Query(..., description="Proposed parent category ID"),
-    current_user: User = Depends(get_current_user)
+    parent_id: str = Query(..., description="Proposed parent category ID")
 ):
     """Validate if a category can be moved to a new parent"""
     try:
@@ -252,8 +233,7 @@ async def validate_parent_category(
 @router.get("/categories/{category_id}/children-count")
 async def get_category_children_count(
     category_id: str = Path(..., description="Category ID"),
-    recursive: bool = Query(False, description="Count recursively (all descendants)"),
-    current_user: User = Depends(get_current_user)
+    recursive: bool = Query(False, description="Count recursively (all descendants)")
 ):
     """Get the count of children for a category"""
     try:
