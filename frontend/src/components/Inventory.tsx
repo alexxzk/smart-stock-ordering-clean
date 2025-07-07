@@ -71,6 +71,26 @@ interface ProductFormData {
   tags: string[];
 }
 
+// Utility functions for number handling
+const formatPrice = (price: any): string => {
+  const numPrice = typeof price === 'number' ? price : parseFloat(price) || 0;
+  return numPrice.toFixed(2);
+};
+
+const formatStock = (stock: any): number => {
+  return typeof stock === 'number' ? stock : parseInt(stock) || 0;
+};
+
+const validatePrice = (value: string): boolean => {
+  const num = parseFloat(value);
+  return !isNaN(num) && num >= 0;
+};
+
+const validateStock = (value: string): boolean => {
+  const num = parseInt(value);
+  return !isNaN(num) && num >= 0 && Number.isInteger(parseFloat(value));
+};
+
 const Inventory: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -156,7 +176,14 @@ const Inventory: React.FC = () => {
       const saved = localStorage.getItem(`products_${currentBusiness}`);
       if (saved) {
         const data = JSON.parse(saved);
-        return data.products || [];
+        const products = data.products || [];
+        
+        // Ensure price and stock_quantity are numbers
+        return products.map((product: any) => ({
+          ...product,
+          price: typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0,
+          stock_quantity: typeof product.stock_quantity === 'number' ? product.stock_quantity : parseInt(product.stock_quantity) || 0
+        }));
       }
     } catch (err) {
       console.error('Failed to load products:', err);
@@ -186,6 +213,23 @@ const Inventory: React.FC = () => {
       return;
     }
 
+    // Validate numeric fields using utility functions
+    const priceStr = formData.price.toString();
+    const stockStr = formData.stock_quantity.toString();
+
+    if (!validatePrice(priceStr)) {
+      alert('Please enter a valid price (must be a positive number)');
+      return;
+    }
+
+    if (!validateStock(stockStr)) {
+      alert('Please enter a valid stock quantity (must be a positive whole number)');
+      return;
+    }
+
+    const price = parseFloat(priceStr);
+    const stockQuantity = parseInt(stockStr);
+
     const category = categories.find(cat => cat.id === formData.category_id);
     const subcategory = categories.find(cat => cat.id === formData.subcategory_id);
 
@@ -200,8 +244,8 @@ const Inventory: React.FC = () => {
       type: formData.type,
       thickness: formData.thickness || undefined,
       has_glue: formData.has_glue,
-      price: formData.price,
-      stock_quantity: formData.stock_quantity,
+      price: price, // Ensure it's a number
+      stock_quantity: stockQuantity, // Ensure it's a number
       sku: formData.sku || `${formData.brand}-${formData.type}-${Date.now()}`,
       description: formData.description,
       image_url: '',
@@ -262,9 +306,25 @@ const Inventory: React.FC = () => {
       return;
     }
 
+    // Validate numeric fields using utility functions
+    let processedValue = value;
+    if (field === 'price') {
+      if (!validatePrice(value)) {
+        alert('Please enter a valid price (must be a positive number)');
+        return;
+      }
+      processedValue = parseFloat(value);
+    } else if (field === 'stock_quantity') {
+      if (!validateStock(value)) {
+        alert('Please enter a valid stock quantity (must be a positive whole number)');
+        return;
+      }
+      processedValue = parseInt(value);
+    }
+
     const updatedProducts = products.map(product => 
       selectedProducts.has(product.id)
-        ? { ...product, [field]: value, updated_at: new Date().toISOString() }
+        ? { ...product, [field]: processedValue, updated_at: new Date().toISOString() }
         : product
     );
     setProducts(updatedProducts);
@@ -342,14 +402,23 @@ const Inventory: React.FC = () => {
         const importedData = JSON.parse(e.target?.result as string);
         
         if (importedData.products && Array.isArray(importedData.products)) {
-          setProducts(importedData.products);
-          saveProductsToStorage(importedData.products);
-          alert(`✅ Successfully imported ${importedData.products.length} products!`);
+          // Validate and clean imported data
+          const cleanedProducts = importedData.products.map((product: any) => ({
+            ...product,
+            price: typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0,
+            stock_quantity: typeof product.stock_quantity === 'number' ? product.stock_quantity : parseInt(product.stock_quantity) || 0,
+            updated_at: new Date().toISOString() // Update timestamp on import
+          }));
+          
+          setProducts(cleanedProducts);
+          saveProductsToStorage(cleanedProducts);
+          alert(`✅ Successfully imported ${cleanedProducts.length} products!`);
         } else {
-          alert('❌ Invalid file format');
+          alert('❌ Invalid file format - missing products array');
         }
       } catch (err) {
-        alert('❌ Failed to import file');
+        console.error('Import error:', err);
+        alert('❌ Failed to import file - invalid JSON format');
       }
     };
     reader.readAsText(file);
@@ -522,17 +591,32 @@ const Inventory: React.FC = () => {
               <X size={16} />
             </button>
           </div>
-          <div className="bulk-edit-actions">
-            <button onClick={() => handleBulkUpdate('type', prompt('Enter new type:'))}>
-              Update Type
-            </button>
-            <button onClick={() => handleBulkUpdate('price', parseFloat(prompt('Enter new price:') || '0'))}>
-              Update Price
-            </button>
-            <button onClick={() => handleBulkUpdate('stock_quantity', parseInt(prompt('Enter new stock:') || '0'))}>
-              Update Stock
-            </button>
-          </div>
+                     <div className="bulk-edit-actions">
+             <button onClick={() => {
+               const newType = prompt('Enter new type:');
+               if (newType && newType.trim()) {
+                 handleBulkUpdate('type', newType.trim());
+               }
+             }}>
+               Update Type
+             </button>
+             <button onClick={() => {
+               const newPrice = prompt('Enter new price (numbers only):');
+               if (newPrice !== null && newPrice.trim()) {
+                 handleBulkUpdate('price', newPrice.trim());
+               }
+             }}>
+               Update Price
+             </button>
+             <button onClick={() => {
+               const newStock = prompt('Enter new stock quantity (whole numbers only):');
+               if (newStock !== null && newStock.trim()) {
+                 handleBulkUpdate('stock_quantity', newStock.trim());
+               }
+             }}>
+               Update Stock
+             </button>
+           </div>
         </div>
       )}
 
@@ -610,16 +694,16 @@ const Inventory: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="product-footer">
-                      <div className="product-price">
-                        <DollarSign size={16} />
-                        <span>${product.price.toFixed(2)}</span>
-                      </div>
-                      <div className="product-stock">
-                        <Package size={16} />
-                        <span>{product.stock_quantity} in stock</span>
-                      </div>
-                    </div>
+                                                                <div className="product-footer">
+                         <div className="product-price">
+                           <DollarSign size={16} />
+                           <span>${formatPrice(product.price)}</span>
+                         </div>
+                         <div className="product-stock">
+                           <Package size={16} />
+                           <span>{formatStock(product.stock_quantity)} in stock</span>
+                         </div>
+                       </div>
                     
                     {product.sku && (
                       <div className="product-sku">
@@ -758,27 +842,58 @@ const Inventory: React.FC = () => {
                   />
                 </div>
                 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Price *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value) || 0})}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Stock Quantity *</label>
-                    <input
-                      type="number"
-                      value={formData.stock_quantity}
-                      onChange={(e) => setFormData({...formData, stock_quantity: parseInt(e.target.value) || 0})}
-                      required
-                    />
-                  </div>
-                </div>
+                                 <div className="form-row">
+                                        <div className="form-group">
+                       <label>Price * ($)</label>
+                       <input
+                         type="number"
+                         step="0.01"
+                         min="0"
+                         value={formData.price || ''}
+                         onChange={(e) => {
+                           const value = e.target.value;
+                           // Allow empty string or valid numbers
+                           if (value === '' || validatePrice(value)) {
+                             setFormData({...formData, price: value === '' ? 0 : parseFloat(value)});
+                           }
+                         }}
+                         onBlur={(e) => {
+                           // Ensure we have a valid number on blur
+                           const value = e.target.value;
+                           if (value !== '' && !validatePrice(value)) {
+                             setFormData({...formData, price: 0});
+                           }
+                         }}
+                         placeholder="0.00"
+                         required
+                       />
+                     </div>
+                                        <div className="form-group">
+                       <label>Stock Quantity *</label>
+                       <input
+                         type="number"
+                         min="0"
+                         step="1"
+                         value={formData.stock_quantity || ''}
+                         onChange={(e) => {
+                           const value = e.target.value;
+                           // Allow empty string or valid whole numbers
+                           if (value === '' || validateStock(value)) {
+                             setFormData({...formData, stock_quantity: value === '' ? 0 : parseInt(value)});
+                           }
+                         }}
+                         onBlur={(e) => {
+                           // Ensure we have a valid number on blur
+                           const value = e.target.value;
+                           if (value !== '' && !validateStock(value)) {
+                             setFormData({...formData, stock_quantity: 0});
+                           }
+                         }}
+                         placeholder="0"
+                         required
+                       />
+                     </div>
+                 </div>
                 
                 <div className="form-group">
                   <label>SKU</label>
