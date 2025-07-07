@@ -158,17 +158,80 @@ const Inventory: React.FC = () => {
     }
   };
 
+  const createDefaultCategories = (): Category[] => {
+    const defaultCategories: Category[] = [
+      {
+        id: 'tempered-glass',
+        name: 'Tempered Glass',
+        level: 0,
+        path: 'Tempered Glass',
+        business_type: currentBusiness
+      },
+      {
+        id: 'apple',
+        name: 'Apple',
+        parent_id: 'tempered-glass',
+        level: 1,
+        path: 'Tempered Glass/Apple',
+        business_type: currentBusiness
+      },
+      {
+        id: 'samsung',
+        name: 'Samsung',
+        parent_id: 'tempered-glass',
+        level: 1,
+        path: 'Tempered Glass/Samsung',
+        business_type: currentBusiness
+      },
+      {
+        id: 'google-pixel',
+        name: 'Google Pixel',
+        parent_id: 'tempered-glass',
+        level: 1,
+        path: 'Tempered Glass/Google Pixel',
+        business_type: currentBusiness
+      },
+      {
+        id: 'phone-cases',
+        name: 'Phone Cases',
+        level: 0,
+        path: 'Phone Cases',
+        business_type: currentBusiness
+      }
+    ];
+
+    // Save these default categories to localStorage
+    try {
+      const dataToSave = {
+        categories: defaultCategories,
+        currentBusiness: currentBusiness,
+        lastSaved: new Date().toISOString()
+      };
+      localStorage.setItem(`categories_${currentBusiness}`, JSON.stringify(dataToSave));
+      console.log('✅ Created default categories');
+    } catch (err) {
+      console.error('Failed to save default categories:', err);
+    }
+
+    return defaultCategories;
+  };
+
   const loadCategoriesFromStorage = (): Category[] => {
     try {
       const saved = localStorage.getItem(`categories_${currentBusiness}`);
       if (saved) {
         const data = JSON.parse(saved);
-        return data.categories || [];
+        const categories = data.categories || [];
+        if (categories.length > 0) {
+          return categories;
+        }
       }
     } catch (err) {
       console.error('Failed to load categories:', err);
     }
-    return [];
+    
+    // If no categories found, create default ones for the business
+    return createDefaultCategories();
   };
 
   const loadProductsFromStorage = (): Product[] => {
@@ -720,45 +783,79 @@ const Inventory: React.FC = () => {
       </div>
 
       {/* Add Product Form */}
-      {showAddForm && (
-        <div className="add-form-overlay">
-          <div className="add-form">
-            <div className="form-header">
-              <h3>Add New Product</h3>
-              <button onClick={() => setShowAddForm(false)}>×</button>
-            </div>
+             {showAddForm && (
+         <div className="add-form-overlay">
+           <div className="add-form">
+             <div className="form-header">
+               <h3>Add New Product</h3>
+               <div className="form-header-actions">
+                 <button 
+                   type="button"
+                   onClick={loadData}
+                   className="refresh-categories-btn"
+                   title="Refresh categories"
+                 >
+                   <RefreshCw size={14} />
+                   Refresh Categories
+                 </button>
+                 <button onClick={() => setShowAddForm(false)}>×</button>
+               </div>
+             </div>
+             
+             {categories.length === 0 && (
+               <div className="category-help">
+                 <AlertCircle size={16} />
+                 <div>
+                   <p><strong>No categories found!</strong></p>
+                   <p>Go to <strong>Categories</strong> page first to create product categories, or click "Refresh Categories" if you just created some.</p>
+                 </div>
+               </div>
+             )}
+             
+             {categories.length > 0 && (
+               <div className="category-info">
+                 <Package size={16} />
+                 <span>{categories.length} categories loaded • {categories.filter(cat => cat.level === 0).length} main categories</span>
+               </div>
+             )}
             
             <form onSubmit={handleAddProduct}>
               <div className="form-section">
                 <h4>Basic Information</h4>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Category *</label>
-                    <select
-                      value={formData.category_id}
-                      onChange={(e) => setFormData({...formData, category_id: e.target.value, subcategory_id: ''})}
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {categories.filter(cat => cat.level === 0).map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Subcategory</label>
-                    <select
-                      value={formData.subcategory_id}
-                      onChange={(e) => setFormData({...formData, subcategory_id: e.target.value})}
-                      disabled={!formData.category_id}
-                    >
-                      <option value="">Select Subcategory</option>
-                      {getSubcategories(formData.category_id).map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+                                 <div className="form-row">
+                   <div className="form-group">
+                     <label>Category *</label>
+                     <select
+                       value={formData.category_id}
+                       onChange={(e) => setFormData({...formData, category_id: e.target.value, subcategory_id: ''})}
+                       required
+                     >
+                       <option value="">Select Category</option>
+                       {categories.filter(cat => cat.level === 0).map(cat => (
+                         <option key={cat.id} value={cat.id}>{cat.name}</option>
+                       ))}
+                       {categories.filter(cat => cat.level === 0).length === 0 && (
+                         <option disabled>No categories available - create some in Categories page</option>
+                       )}
+                     </select>
+                   </div>
+                   <div className="form-group">
+                     <label>Subcategory</label>
+                     <select
+                       value={formData.subcategory_id}
+                       onChange={(e) => setFormData({...formData, subcategory_id: e.target.value})}
+                       disabled={!formData.category_id}
+                     >
+                       <option value="">Select Subcategory</option>
+                       {getSubcategories(formData.category_id).map(cat => (
+                         <option key={cat.id} value={cat.id}>{cat.name}</option>
+                       ))}
+                       {formData.category_id && getSubcategories(formData.category_id).length === 0 && (
+                         <option disabled>No subcategories available</option>
+                       )}
+                     </select>
+                   </div>
+                 </div>
                 
                 <div className="form-row">
                   <div className="form-group">
@@ -916,12 +1013,16 @@ const Inventory: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-actions">
-                <button type="button" onClick={() => setShowAddForm(false)}>Cancel</button>
-                <button type="submit" className="btn-primary">
-                  Add Product
-                </button>
-              </div>
+                             <div className="form-actions">
+                 <button type="button" onClick={() => setShowAddForm(false)}>Cancel</button>
+                 <button 
+                   type="submit" 
+                   className="btn-primary"
+                   disabled={!formData.category_id || categories.length === 0}
+                 >
+                   Add Product
+                 </button>
+               </div>
             </form>
           </div>
         </div>
