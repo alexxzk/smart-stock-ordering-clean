@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Plus,
-  Edit,
   Trash2,
   Folder,
   Package,
