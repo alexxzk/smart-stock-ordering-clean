@@ -16,7 +16,16 @@ import {
   Calendar,
   AlertCircle,
   CheckCircle,
-  XCircle
+  XCircle,
+  MoreHorizontal,
+  FolderPlus,
+  Settings,
+  Filter,
+  SortAsc,
+  Eye,
+  Archive,
+  Star,
+  Copy
 } from 'lucide-react';
 import './Categories.css';
 
@@ -62,11 +71,12 @@ const Categories: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   // UI State
-  const [viewMode, setViewMode] = useState<'tree' | 'list'>('tree');
+  const [viewMode, setViewMode] = useState<'tree' | 'grid' | 'table'>('tree');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [selectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showInactive, setShowInactive] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Form State
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -75,26 +85,34 @@ const Categories: React.FC = () => {
     name: '',
     description: '',
     parent_id: '',
-    color: '#FF6B6B',
+    color: '#3B82F6',
     icon: '📦',
     sort_order: 0,
     is_active: true
   });
   
-  // Common color options
-  const colorOptions = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-    '#DDA0DD', '#98D8C8', '#FD79A8', '#6C5CE7', '#00B894',
-    '#0984E3', '#E17055', '#FDCB6E', '#E84393', '#74B9FF'
-  ];
+  // Enhanced color palette with better organization
+  const colorPalettes = {
+    primary: ['#3B82F6', '#1D4ED8', '#1E40AF', '#1E3A8A'],
+    success: ['#10B981', '#059669', '#047857', '#065F46'],
+    warning: ['#F59E0B', '#D97706', '#B45309', '#92400E'],
+    danger: ['#EF4444', '#DC2626', '#B91C1C', '#991B1B'],
+    purple: ['#8B5CF6', '#7C3AED', '#6D28D9', '#5B21B6'],
+    pink: ['#EC4899', '#DB2777', '#BE185D', '#9D174D'],
+    indigo: ['#6366F1', '#4F46E5', '#4338CA', '#3730A3'],
+    teal: ['#14B8A6', '#0D9488', '#0F766E', '#115E59']
+  };
   
-  // Common icon options
-  const iconOptions = [
-    '📦', '🍽️', '🥕', '🥛', '🥩', '🥤', '🍿', '🥖', '🧽', '📋', '🍳',
-    '🌿', '❄️', '🥫', '☕', '🍵', '🧃', '🛒', '🏪', '🎯', '⚡', '🔥',
-    '💡', '🎨', '🎭', '🎪', '🎨', '🎯', '🏆', '🌟', '💎', '🔮'
-  ];
-
+  // Enhanced icon collection with categories
+  const iconCategories = {
+    business: ['📊', '💼', '🏢', '📈', '💰', '🎯', '📋', '📌'],
+    food: ['🍽️', '🥕', '🥛', '🥩', '🥤', '🍿', '🥖', '☕', '🍵', '🧃'],
+    supplies: ['🧽', '📋', '🍳', '🔧', '⚙️', '🛠️', '📦', '📄'],
+    nature: ['🌿', '❄️', '🔥', '💧', '🌱', '🍃', '🌺', '🌳'],
+    symbols: ['⭐', '🎨', '🎪', '🎯', '🏆', '💎', '🔮', '⚡'],
+    objects: ['📱', '💻', '🖥️', '📺', '📷', '🎧', '⌚', '🔑']
+  };
+  
   useEffect(() => {
     fetchCategories();
   }, [showInactive]);
@@ -104,7 +122,6 @@ const Categories: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('auth_token');
       
-      // Fetch both flat list and tree structure
       const [categoriesResponse, treeResponse] = await Promise.all([
         fetch(`/api/categories?include_inactive=${showInactive}`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -225,7 +242,7 @@ const Categories: React.FC = () => {
       name: '',
       description: '',
       parent_id: '',
-      color: '#FF6B6B',
+      color: '#3B82F6',
       icon: '📦',
       sort_order: 0,
       is_active: true
@@ -238,7 +255,7 @@ const Categories: React.FC = () => {
       name: category.name,
       description: category.description || '',
       parent_id: category.parent_id || '',
-      color: category.color || '#FF6B6B',
+      color: category.color || '#3B82F6',
       icon: category.icon || '📦',
       sort_order: category.sort_order,
       is_active: category.is_active
@@ -255,83 +272,116 @@ const Categories: React.FC = () => {
     setExpandedCategories(newExpanded);
   };
 
-  const renderCategoryTree = (categories: Category[], level = 0) => {
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const renderTreeView = (categories: Category[], level = 0) => {
     return categories.map(category => {
       const isExpanded = expandedCategories.has(category.id);
       const hasChildren = category.children && category.children.length > 0;
+      const isSelected = selectedCategory?.id === category.id;
       
       return (
-        <div key={category.id} className="category-item">
+        <div key={category.id} className="tree-item">
           <div 
-            className={`category-row ${selectedCategory?.id === category.id ? 'selected' : ''}`}
-            style={{ marginLeft: `${level * 20}px` }}
+            className={`tree-node ${isSelected ? 'selected' : ''} ${!category.is_active ? 'inactive' : ''}`}
+            style={{ paddingLeft: `${level * 24 + 16}px` }}
+            onClick={() => setSelectedCategory(category)}
           >
-            <div className="category-info">
+            <div className="tree-node-content">
               <button
-                onClick={() => toggleExpanded(category.id)}
-                className="expand-button"
+                className="expand-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleExpanded(category.id);
+                }}
                 disabled={!hasChildren}
               >
                 {hasChildren ? (
                   isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />
                 ) : (
-                  <span className="spacer" />
+                  <div className="expand-placeholder" />
                 )}
               </button>
               
-              <span className="category-icon" style={{ color: category.color }}>
-                {category.icon || '📦'}
-              </span>
+              <div 
+                className="category-icon-wrapper"
+                style={{ backgroundColor: category.color }}
+              >
+                <span className="category-icon">{category.icon || '📦'}</span>
+              </div>
               
-              <div className="category-details">
-                <h4>{category.name}</h4>
-                <p className="category-path">{category.path}</p>
+              <div className="category-info">
+                <div className="category-header">
+                  <h4 className="category-name">{category.name}</h4>
+                  <div className="category-badges">
+                    {category.item_count > 0 && (
+                      <span className="badge badge-items">
+                        <Package size={12} />
+                        {category.item_count}
+                      </span>
+                    )}
+                    {category.subcategory_count > 0 && (
+                      <span className="badge badge-subcategories">
+                        <Folder size={12} />
+                        {category.subcategory_count}
+                      </span>
+                    )}
+                    {!category.is_active && (
+                      <span className="badge badge-inactive">
+                        <EyeOff size={12} />
+                        Inactive
+                      </span>
+                    )}
+                  </div>
+                </div>
                 {category.description && (
                   <p className="category-description">{category.description}</p>
                 )}
-              </div>
-              
-              <div className="category-stats">
-                <span className="stat">
-                  <Package size={14} />
-                  {category.item_count}
-                </span>
-                {category.subcategory_count > 0 && (
-                  <span className="stat">
-                    <Folder size={14} />
-                    {category.subcategory_count}
-                  </span>
-                )}
-                {!category.is_active && (
-                  <span className="stat inactive">
-                    <EyeOff size={14} />
-                    Inactive
-                  </span>
-                )}
+                <div className="category-path">{category.path}</div>
               </div>
             </div>
             
             <div className="category-actions">
               <button
-                onClick={() => startEdit(category)}
-                className="action-button edit"
+                className="action-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  startEdit(category);
+                }}
                 title="Edit category"
               >
-                <Edit size={16} />
+                <Edit size={14} />
               </button>
               <button
-                onClick={() => handleDeleteCategory(category.id)}
-                className="action-button delete"
+                className="action-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFormData(prev => ({ ...prev, parent_id: category.id }));
+                  setShowCreateForm(true);
+                }}
+                title="Add subcategory"
+              >
+                <FolderPlus size={14} />
+              </button>
+              <button
+                className="action-btn action-btn-danger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteCategory(category.id);
+                }}
                 title="Delete category"
               >
-                <Trash2 size={16} />
+                <Trash2 size={14} />
               </button>
             </div>
           </div>
           
           {hasChildren && isExpanded && (
-            <div className="category-children">
-              {renderCategoryTree(category.children!, level + 1)}
+            <div className="tree-children">
+              {renderTreeView(category.children!, level + 1)}
             </div>
           )}
         </div>
@@ -339,79 +389,231 @@ const Categories: React.FC = () => {
     });
   };
 
-  const renderListView = () => {
-    const filteredCategories = categories.filter(category =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-
+  const renderGridView = () => {
     return (
-      <div className="category-list">
+      <div className="grid-view">
         {filteredCategories.map(category => (
-          <div key={category.id} className="category-card">
-            <div className="category-header">
-              <div className="category-title">
-                <span className="category-icon" style={{ color: category.color }}>
-                  {category.icon || '📦'}
-                </span>
-                <h3>{category.name}</h3>
-                <span className="category-level">Level {category.level}</span>
+          <div 
+            key={category.id} 
+            className={`category-card ${selectedCategory?.id === category.id ? 'selected' : ''} ${!category.is_active ? 'inactive' : ''}`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            <div className="card-header">
+              <div 
+                className="card-icon-wrapper"
+                style={{ backgroundColor: category.color }}
+              >
+                <span className="card-icon">{category.icon || '📦'}</span>
               </div>
-              <div className="category-actions">
-                <button
-                  onClick={() => startEdit(category)}
-                  className="action-button edit"
-                >
-                  <Edit size={16} />
+              <div className="card-actions">
+                <button className="action-btn" onClick={(e) => { e.stopPropagation(); startEdit(category); }}>
+                  <Edit size={14} />
                 </button>
-                <button
-                  onClick={() => handleDeleteCategory(category.id)}
-                  className="action-button delete"
-                >
-                  <Trash2 size={16} />
+                <button className="action-btn" onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id); }}>
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
             
-            <div className="category-content">
-              <p className="category-path">{category.path}</p>
+            <div className="card-content">
+              <h3 className="card-title">{category.name}</h3>
+              <p className="card-path">{category.path}</p>
               {category.description && (
-                <p className="category-description">{category.description}</p>
+                <p className="card-description">{category.description}</p>
               )}
-            </div>
-            
-            <div className="category-footer">
-              <div className="category-stats">
-                <span className="stat">
+              
+              <div className="card-stats">
+                <div className="stat-item">
                   <Package size={14} />
-                  {category.item_count} items
-                </span>
-                <span className="stat">
+                  <span>{category.item_count} items</span>
+                </div>
+                <div className="stat-item">
                   <Folder size={14} />
-                  {category.subcategory_count} subcategories
-                </span>
-                <span className="stat">
-                  <Calendar size={14} />
-                  {new Date(category.created_at).toLocaleDateString()}
-                </span>
+                  <span>{category.subcategory_count} subcategories</span>
+                </div>
               </div>
               
-              <div className="category-status">
-                {category.is_active ? (
-                  <span className="status active">
-                    <CheckCircle size={14} />
-                    Active
-                  </span>
-                ) : (
-                  <span className="status inactive">
-                    <XCircle size={14} />
-                    Inactive
-                  </span>
+              <div className="card-meta">
+                <span className="level-badge">Level {category.level}</span>
+                {!category.is_active && (
+                  <span className="status-badge inactive">Inactive</span>
                 )}
               </div>
             </div>
           </div>
         ))}
+      </div>
+    );
+  };
+
+  const renderTableView = () => {
+    return (
+      <div className="table-view">
+        <table className="categories-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Path</th>
+              <th>Items</th>
+              <th>Subcategories</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredCategories.map(category => (
+              <tr 
+                key={category.id}
+                className={`${selectedCategory?.id === category.id ? 'selected' : ''} ${!category.is_active ? 'inactive' : ''}`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                <td>
+                  <div className="table-category-info">
+                    <div 
+                      className="table-icon"
+                      style={{ backgroundColor: category.color }}
+                    >
+                      {category.icon || '📦'}
+                    </div>
+                    <div>
+                      <div className="table-category-name">{category.name}</div>
+                      {category.description && (
+                        <div className="table-category-desc">{category.description}</div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="table-path">{category.path}</td>
+                <td>
+                  <span className="table-stat">
+                    <Package size={12} />
+                    {category.item_count}
+                  </span>
+                </td>
+                <td>
+                  <span className="table-stat">
+                    <Folder size={12} />
+                    {category.subcategory_count}
+                  </span>
+                </td>
+                <td>
+                  <span className={`status-indicator ${category.is_active ? 'active' : 'inactive'}`}>
+                    {category.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
+                <td>
+                  <div className="table-actions">
+                    <button className="action-btn" onClick={(e) => { e.stopPropagation(); startEdit(category); }}>
+                      <Edit size={14} />
+                    </button>
+                    <button className="action-btn" onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id); }}>
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const renderSidebar = () => {
+    if (!selectedCategory) return null;
+
+    return (
+      <div className={`category-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-title">
+            <div 
+              className="sidebar-icon"
+              style={{ backgroundColor: selectedCategory.color }}
+            >
+              {selectedCategory.icon || '📦'}
+            </div>
+            <div>
+              <h3>{selectedCategory.name}</h3>
+              <p>{selectedCategory.path}</p>
+            </div>
+          </div>
+          <button 
+            className="sidebar-collapse-btn"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          >
+            <ChevronRight className={sidebarCollapsed ? '' : 'rotated'} size={16} />
+          </button>
+        </div>
+        
+        {!sidebarCollapsed && (
+          <div className="sidebar-content">
+            <div className="sidebar-section">
+              <h4>Details</h4>
+              <div className="detail-item">
+                <span className="detail-label">Description:</span>
+                <span className="detail-value">{selectedCategory.description || 'No description'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Level:</span>
+                <span className="detail-value">{selectedCategory.level}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Created:</span>
+                <span className="detail-value">{new Date(selectedCategory.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+
+            <div className="sidebar-section">
+              <h4>Statistics</h4>
+              <div className="stat-grid">
+                <div className="stat-box">
+                  <Package size={20} />
+                  <div>
+                    <div className="stat-number">{selectedCategory.item_count}</div>
+                    <div className="stat-label">Items</div>
+                  </div>
+                </div>
+                <div className="stat-box">
+                  <Folder size={20} />
+                  <div>
+                    <div className="stat-number">{selectedCategory.subcategory_count}</div>
+                    <div className="stat-label">Subcategories</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="sidebar-section">
+              <h4>Actions</h4>
+              <div className="sidebar-actions">
+                <button 
+                  className="sidebar-action-btn primary"
+                  onClick={() => startEdit(selectedCategory)}
+                >
+                  <Edit size={16} />
+                  Edit Category
+                </button>
+                <button 
+                  className="sidebar-action-btn"
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, parent_id: selectedCategory.id }));
+                    setShowCreateForm(true);
+                  }}
+                >
+                  <FolderPlus size={16} />
+                  Add Subcategory
+                </button>
+                <button 
+                  className="sidebar-action-btn danger"
+                  onClick={() => handleDeleteCategory(selectedCategory.id)}
+                >
+                  <Trash2 size={16} />
+                  Delete Category
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -422,130 +624,155 @@ const Categories: React.FC = () => {
     const onSubmit = isEditing ? handleUpdateCategory : handleCreateCategory;
 
     return (
-      <div className="category-form-overlay">
-        <div className="category-form">
+      <div className="form-overlay">
+        <div className="form-container">
           <div className="form-header">
             <h2>{title}</h2>
             <button
+              className="form-close-btn"
               onClick={() => {
                 setShowCreateForm(false);
                 setEditingCategory(null);
                 resetForm();
               }}
-              className="close-button"
             >
-              <XCircle size={20} />
+              <XCircle size={24} />
             </button>
           </div>
           
-          <form onSubmit={onSubmit} className="form-content">
-            <div className="form-group">
-              <label>Category Name *</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                placeholder="Enter category name"
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Description</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Enter category description"
-                rows={3}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Parent Category</label>
-              <select
-                value={formData.parent_id}
-                onChange={(e) => setFormData({ ...formData, parent_id: e.target.value })}
-              >
-                <option value="">-- Root Category --</option>
-                {categories
-                  .filter(cat => cat.id !== editingCategory?.id)
-                  .map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.path}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>Color</label>
-                <div className="color-options">
-                  {colorOptions.map(color => (
-                    <button
-                      key={color}
-                      type="button"
-                      className={`color-option ${formData.color === color ? 'selected' : ''}`}
-                      style={{ backgroundColor: color }}
-                      onClick={() => setFormData({ ...formData, color })}
-                    />
-                  ))}
+          <form onSubmit={onSubmit} className="category-form">
+            <div className="form-section">
+              <h3>Basic Information</h3>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label>Category Name *</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Enter category name"
+                    required
+                  />
+                </div>
+                
+                <div className="form-field">
+                  <label>Parent Category</label>
+                  <select
+                    value={formData.parent_id}
+                    onChange={(e) => setFormData({ ...formData, parent_id: e.target.value })}
+                  >
+                    <option value="">-- Root Category --</option>
+                    {categories
+                      .filter(cat => cat.id !== editingCategory?.id)
+                      .map(category => (
+                        <option key={category.id} value={category.id}>
+                          {category.path}
+                        </option>
+                      ))}
+                  </select>
                 </div>
               </div>
               
-              <div className="form-group">
-                <label>Icon</label>
-                <div className="icon-options">
-                  {iconOptions.map(icon => (
-                    <button
-                      key={icon}
-                      type="button"
-                      className={`icon-option ${formData.icon === icon ? 'selected' : ''}`}
-                      onClick={() => setFormData({ ...formData, icon })}
-                    >
-                      {icon}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>Sort Order</label>
-                <input
-                  type="number"
-                  value={formData.sort_order}
-                  onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) })}
-                  min="0"
+              <div className="form-field">
+                <label>Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Enter category description"
+                  rows={3}
                 />
               </div>
-              
-              <div className="form-group">
-                <label>
+            </div>
+
+            <div className="form-section">
+              <h3>Visual Settings</h3>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label>Color</label>
+                  <div className="color-picker">
+                    {Object.entries(colorPalettes).map(([paletteName, colors]) => (
+                      <div key={paletteName} className="color-palette">
+                        <span className="palette-label">{paletteName}</span>
+                        <div className="color-options">
+                          {colors.map(color => (
+                            <button
+                              key={color}
+                              type="button"
+                              className={`color-option ${formData.color === color ? 'selected' : ''}`}
+                              style={{ backgroundColor: color }}
+                              onClick={() => setFormData({ ...formData, color })}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="form-field">
+                  <label>Icon</label>
+                  <div className="icon-picker">
+                    {Object.entries(iconCategories).map(([categoryName, icons]) => (
+                      <div key={categoryName} className="icon-category">
+                        <span className="icon-category-label">{categoryName}</span>
+                        <div className="icon-options">
+                          {icons.map(icon => (
+                            <button
+                              key={icon}
+                              type="button"
+                              className={`icon-option ${formData.icon === icon ? 'selected' : ''}`}
+                              onClick={() => setFormData({ ...formData, icon })}
+                            >
+                              {icon}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-section">
+              <h3>Settings</h3>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label>Sort Order</label>
                   <input
-                    type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    type="number"
+                    value={formData.sort_order}
+                    onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) })}
+                    min="0"
                   />
-                  Active
-                </label>
+                </div>
+                
+                <div className="form-field">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_active}
+                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    />
+                    <span className="checkbox-text">Active Category</span>
+                  </label>
+                </div>
               </div>
             </div>
             
             <div className="form-actions">
               <button
                 type="button"
+                className="btn btn-secondary"
                 onClick={() => {
                   setShowCreateForm(false);
                   setEditingCategory(null);
                   resetForm();
                 }}
-                className="cancel-button"
               >
                 Cancel
               </button>
-              <button type="submit" className="submit-button">
+              <button type="submit" className="btn btn-primary">
                 {isEditing ? 'Update' : 'Create'} Category
               </button>
             </div>
@@ -557,133 +784,162 @@ const Categories: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="categories-loading">
-        <div className="spinner"></div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
         <p>Loading categories...</p>
       </div>
     );
   }
 
   return (
-    <div className="categories-container">
-      <div className="categories-header">
-        <div className="header-title">
-          <h1>Categories</h1>
-          <p>Organize your inventory with nested categories</p>
+    <div className="categories-page">
+      <div className="page-header">
+        <div className="header-content">
+          <div className="header-title">
+            <h1>Category Management</h1>
+            <p>Organize your inventory with hierarchical categories</p>
+          </div>
+          
+          <div className="header-actions">
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowCreateForm(true)}
+            >
+              <Plus size={16} />
+              New Category
+            </button>
+            
+            {categories.length === 0 && (
+              <button
+                className="btn btn-secondary"
+                onClick={createSampleCategories}
+              >
+                <Download size={16} />
+                Sample Data
+              </button>
+            )}
+          </div>
         </div>
         
-        <div className="header-actions">
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="primary-button"
-          >
-            <Plus size={16} />
-            Add Category
-          </button>
-          
-          {categories.length === 0 && (
-            <button
-              onClick={createSampleCategories}
-              className="secondary-button"
-            >
-              <Download size={16} />
-              Create Sample Data
-            </button>
-          )}
-        </div>
-      </div>
-      
-      <div className="categories-controls">
-        <div className="search-controls">
-          <div className="search-box">
-            <Search size={16} />
-            <input
-              type="text"
-              placeholder="Search categories..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="header-controls">
+          <div className="search-section">
+            <div className="search-input">
+              <Search size={16} />
+              <input
+                type="text"
+                placeholder="Search categories..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="filter-controls">
+              <label className="filter-label">
+                <input
+                  type="checkbox"
+                  checked={showInactive}
+                  onChange={(e) => setShowInactive(e.target.checked)}
+                />
+                <span>Show Inactive</span>
+              </label>
+            </div>
           </div>
           
           <div className="view-controls">
-            <label>
-              <input
-                type="checkbox"
-                checked={showInactive}
-                onChange={(e) => setShowInactive(e.target.checked)}
-              />
-              Show Inactive
-            </label>
-            
-            <div className="view-mode">
-              <button
-                onClick={() => setViewMode('tree')}
-                className={`view-button ${viewMode === 'tree' ? 'active' : ''}`}
-              >
-                <List size={16} />
-                Tree
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`view-button ${viewMode === 'list' ? 'active' : ''}`}
-              >
-                <Grid size={16} />
-                List
-              </button>
-            </div>
+            <button
+              className={`view-btn ${viewMode === 'tree' ? 'active' : ''}`}
+              onClick={() => setViewMode('tree')}
+            >
+              <List size={16} />
+              Tree
+            </button>
+            <button
+              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid size={16} />
+              Grid
+            </button>
+            <button
+              className={`view-btn ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+            >
+              <Calendar size={16} />
+              Table
+            </button>
           </div>
         </div>
-        
-        {categoryTree && (
-          <div className="category-stats">
-            <div className="stat-card">
-              <Folder size={20} />
-              <div>
-                <h3>{categoryTree.total_categories}</h3>
-                <p>Total Categories</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <TrendingUp size={20} />
-              <div>
-                <h3>{categoryTree.max_depth}</h3>
-                <p>Max Depth</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <Package size={20} />
-              <div>
-                <h3>{categories.reduce((sum, cat) => sum + cat.item_count, 0)}</h3>
-                <p>Total Items</p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-      
+
       {error && (
-        <div className="error-message">
+        <div className="error-banner">
           <AlertCircle size={16} />
-          {error}
+          <span>{error}</span>
+          <button onClick={() => setError(null)}>
+            <XCircle size={16} />
+          </button>
         </div>
       )}
-      
-      <div className="categories-content">
-        {viewMode === 'tree' ? (
-          <div className="category-tree">
-            {categoryTree && categoryTree.categories.length > 0 ? (
-              renderCategoryTree(categoryTree.categories)
-            ) : (
-              <div className="empty-state">
-                <Folder size={48} />
-                <h3>No Categories Found</h3>
-                <p>Create your first category to get started</p>
-              </div>
-            )}
+
+      {categoryTree && (
+        <div className="stats-section">
+          <div className="stat-card">
+            <Folder className="stat-icon" />
+            <div className="stat-info">
+              <div className="stat-value">{categoryTree.total_categories}</div>
+              <div className="stat-label">Total Categories</div>
+            </div>
           </div>
-        ) : (
-          renderListView()
-        )}
+          <div className="stat-card">
+            <TrendingUp className="stat-icon" />
+            <div className="stat-info">
+              <div className="stat-value">{categoryTree.max_depth}</div>
+              <div className="stat-label">Max Depth</div>
+            </div>
+          </div>
+          <div className="stat-card">
+            <Package className="stat-icon" />
+            <div className="stat-info">
+              <div className="stat-value">{categories.reduce((sum, cat) => sum + cat.item_count, 0)}</div>
+              <div className="stat-label">Total Items</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="main-content">
+        <div className={`content-area ${selectedCategory ? 'with-sidebar' : ''}`}>
+          {viewMode === 'tree' && categoryTree && categoryTree.categories.length > 0 && (
+            <div className="tree-container">
+              {renderTreeView(categoryTree.categories)}
+            </div>
+          )}
+          
+          {viewMode === 'grid' && (
+            renderGridView()
+          )}
+          
+          {viewMode === 'table' && (
+            renderTableView()
+          )}
+          
+          {categories.length === 0 && (
+            <div className="empty-state">
+              <Folder size={64} />
+              <h3>No Categories Found</h3>
+              <p>Create your first category to get started organizing your inventory</p>
+              <button 
+                className="btn btn-primary"
+                onClick={() => setShowCreateForm(true)}
+              >
+                <Plus size={16} />
+                Create Category
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {selectedCategory && renderSidebar()}
       </div>
       
       {(showCreateForm || editingCategory) && renderForm()}
