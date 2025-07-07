@@ -3,27 +3,17 @@ import {
   Plus,
   Edit,
   Trash2,
-  FolderOpen,
   Folder,
-  Tag,
   ChevronDown,
   ChevronRight,
   Search,
-  Filter,
-  MoreVertical,
-  Move,
-  Eye,
   EyeOff,
   Package,
   TrendingUp,
-  Settings,
   Grid,
   List,
   Download,
-  Upload,
-  Users,
   Calendar,
-  Hash,
   AlertCircle,
   CheckCircle,
   XCircle
@@ -74,7 +64,7 @@ const Categories: React.FC = () => {
   // UI State
   const [viewMode, setViewMode] = useState<'tree' | 'list'>('tree');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory] = useState<Category | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showInactive, setShowInactive] = useState(false);
   

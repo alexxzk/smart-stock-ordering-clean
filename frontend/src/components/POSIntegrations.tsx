@@ -10,8 +10,7 @@ import {
   CheckCircle,
   Users,
   Package,
-  Activity,
-  Clock
+  Activity
 } from 'lucide-react';
 
 interface POSSystem {
@@ -27,15 +26,7 @@ interface POSSystem {
   status: string;
 }
 
-interface SalesData {
-  transaction_id: string;
-  item_name: string;
-  quantity: number;
-  unit_price: number;
-  total_price: number;
-  sale_date: string;
-  pos_system: string;
-}
+
 
 interface Analytics {
   summary: {
@@ -70,7 +61,6 @@ const POSIntegrations: React.FC = () => {
   const [selectedPOS, setSelectedPOS] = useState<string>('square');
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-  const [salesData, setSalesData] = useState<SalesData[]>([]);
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState({
     start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -116,7 +106,6 @@ const POSIntegrations: React.FC = () => {
         const data = await response.json();
         setAnalytics(data.analytics);
         setRecommendations(data.recommendations);
-        setSalesData(data.sales_data);
       }
     } catch (error) {
       console.error('Error fetching mock data:', error);
