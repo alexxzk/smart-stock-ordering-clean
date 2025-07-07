@@ -8,6 +8,7 @@ import Inventory from './pages/Inventory'
 import Suppliers from './pages/Suppliers'
 import Integrations from './pages/Integrations'
 import SupplierIntegrations from './pages/SupplierIntegrations'
+import POSIntegrations from './pages/POSIntegrations'
 import Orders from './pages/Orders'
 import Login from './pages/Login'
 import TestPage from './pages/TestPage'
@@ -36,6 +37,7 @@ function App() {
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="integrations" element={<Integrations />} />
             <Route path="supplier-integrations" element={<SupplierIntegrations />} />
+            <Route path="pos-integrations" element={<POSIntegrations />} />
             <Route path="orders" element={<Orders />} />
           </Route>
         </Routes>

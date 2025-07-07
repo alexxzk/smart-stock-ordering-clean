@@ -7,7 +7,8 @@ import {
   Coffee,
   Building,
   Zap,
-  Link
+  Link,
+  Activity
 } from 'lucide-react'
 
 const navigation = [
@@ -17,6 +18,7 @@ const navigation = [
   { name: 'Suppliers', href: '/suppliers', icon: Building },
   { name: 'Integrations', href: '/integrations', icon: Zap },
   { name: 'Supplier Integrations', href: '/supplier-integrations', icon: Link },
+  { name: 'POS Analytics', href: '/pos-integrations', icon: Activity },
   { name: 'Orders', href: '/orders', icon: ShoppingCart },
 ]
 
