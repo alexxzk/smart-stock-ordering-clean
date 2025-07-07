@@ -121,6 +121,7 @@
   border-radius: 8px;
   font-size: 14px;
   background: white;
+  color: #374151;
   transition: all 0.2s ease;
 }
 
@@ -989,6 +990,7 @@
   font-size: 14px;
   transition: all 0.2s ease;
   background: white;
+  color: #374151;
 }
 
 .form-field input:focus,
@@ -1286,4 +1288,10 @@
   .stat-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder,
+.search-input input::placeholder {
+  color: #9ca3af;
 }

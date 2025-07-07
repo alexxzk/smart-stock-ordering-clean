@@ -11,148 +11,456 @@ class CategoryService:
     def __init__(self):
         self.db = get_firestore_client()
         self.collection_name = "categories"
+        self._mock_categories = {}  # In-memory storage for mock data
+        self._initialized_mock_data = False
+    
+    def _initialize_mock_data(self):
+        """Initialize mock data if Firebase is not available"""
+        if self._initialized_mock_data:
+            return
+        
+        # Create sample categories
+        now = datetime.utcnow()
+        
+        # Root categories
+        food_id = str(uuid.uuid4())
+        cleaning_id = str(uuid.uuid4())
+        office_id = str(uuid.uuid4())
+        
+        # Subcategories
+        fruits_id = str(uuid.uuid4())
+        dairy_id = str(uuid.uuid4())
+        meat_id = str(uuid.uuid4())
+        beverages_id = str(uuid.uuid4())
+        
+        # Third level categories
+        coffee_id = str(uuid.uuid4())
+        tea_id = str(uuid.uuid4())
+        
+        mock_categories = {
+            food_id: Category(
+                id=food_id,
+                name="Food & Beverages",
+                description="All food and beverage items",
+                parent_id=None,
+                color="#FF6B6B",
+                icon="🍽️",
+                sort_order=0,
+                is_active=True,
+                level=0,
+                path="Food & Beverages",
+                item_count=45,
+                subcategory_count=4,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            cleaning_id: Category(
+                id=cleaning_id,
+                name="Cleaning Supplies",
+                description="Cleaning and maintenance products",
+                parent_id=None,
+                color="#00B894",
+                icon="🧽",
+                sort_order=1,
+                is_active=True,
+                level=0,
+                path="Cleaning Supplies",
+                item_count=12,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            office_id: Category(
+                id=office_id,
+                name="Office Supplies",
+                description="Office equipment and supplies",
+                parent_id=None,
+                color="#0984E3",
+                icon="📋",
+                sort_order=2,
+                is_active=True,
+                level=0,
+                path="Office Supplies",
+                item_count=8,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            fruits_id: Category(
+                id=fruits_id,
+                name="Fruits & Vegetables",
+                description="Fresh produce",
+                parent_id=food_id,
+                color="#4ECDC4",
+                icon="🥕",
+                sort_order=0,
+                is_active=True,
+                level=1,
+                path="Food & Beverages/Fruits & Vegetables",
+                item_count=18,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            dairy_id: Category(
+                id=dairy_id,
+                name="Dairy & Eggs",
+                description="Milk, cheese, eggs",
+                parent_id=food_id,
+                color="#45B7D1",
+                icon="🥛",
+                sort_order=1,
+                is_active=True,
+                level=1,
+                path="Food & Beverages/Dairy & Eggs",
+                item_count=12,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            meat_id: Category(
+                id=meat_id,
+                name="Meat & Seafood",
+                description="Fresh meat and seafood",
+                parent_id=food_id,
+                color="#F9CA24",
+                icon="🥩",
+                sort_order=2,
+                is_active=True,
+                level=1,
+                path="Food & Beverages/Meat & Seafood",
+                item_count=8,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            beverages_id: Category(
+                id=beverages_id,
+                name="Beverages",
+                description="Drinks and beverages",
+                parent_id=food_id,
+                color="#6C5CE7",
+                icon="🥤",
+                sort_order=3,
+                is_active=True,
+                level=1,
+                path="Food & Beverages/Beverages",
+                item_count=7,
+                subcategory_count=2,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            coffee_id: Category(
+                id=coffee_id,
+                name="Coffee",
+                description="Coffee and coffee products",
+                parent_id=beverages_id,
+                color="#6C5CE7",
+                icon="☕",
+                sort_order=0,
+                is_active=True,
+                level=2,
+                path="Food & Beverages/Beverages/Coffee",
+                item_count=3,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            ),
+            tea_id: Category(
+                id=tea_id,
+                name="Tea",
+                description="Tea and tea products",
+                parent_id=beverages_id,
+                color="#00B894",
+                icon="🍵",
+                sort_order=1,
+                is_active=True,
+                level=2,
+                path="Food & Beverages/Beverages/Tea",
+                item_count=4,
+                subcategory_count=0,
+                created_at=now,
+                updated_at=now,
+                created_by="system"
+            )
+        }
+        
+        self._mock_categories = mock_categories
+        self._initialized_mock_data = True
     
     async def create_category(self, category_data: CategoryCreate, user_id: str) -> Category:
         """Create a new category"""
         try:
-            # Generate unique ID
-            category_id = str(uuid.uuid4())
-            
-            # Validate parent category exists if specified
-            if category_data.parent_id:
-                parent = await self.get_category_by_id(category_data.parent_id)
-                if not parent:
-                    raise ValueError(f"Parent category {category_data.parent_id} not found")
-            
-            # Calculate level and path
-            level, path = await self._calculate_level_and_path(category_data.parent_id, category_data.name)
-            
-            # Create category document
-            now = datetime.utcnow()
-            category_doc = {
-                "id": category_id,
-                "name": category_data.name,
-                "description": category_data.description,
-                "parent_id": category_data.parent_id,
-                "color": category_data.color,
-                "icon": category_data.icon,
-                "sort_order": category_data.sort_order,
-                "is_active": category_data.is_active,
-                "level": level,
-                "path": path,
-                "item_count": 0,
-                "subcategory_count": 0,
-                "created_at": now,
-                "updated_at": now,
-                "created_by": user_id
-            }
-            
-            # Save to Firestore
+            # If Firebase is available, use it
             if self.db:
-                doc_ref = self.db.collection(self.collection_name).document(category_id)
-                doc_ref.set(category_doc)
-                
-                # Update parent's subcategory count
-                if category_data.parent_id:
-                    await self._update_subcategory_count(category_data.parent_id)
-            
-            return Category(**category_doc)
-            
+                return await self._create_category_firebase(category_data, user_id)
+            else:
+                return await self._create_category_mock(category_data, user_id)
         except Exception as e:
             raise Exception(f"Error creating category: {str(e)}")
+    
+    async def _create_category_firebase(self, category_data: CategoryCreate, user_id: str) -> Category:
+        """Create category using Firebase"""
+        if not self.db:
+            raise Exception("Firebase not available")
+            
+        # Generate unique ID
+        category_id = str(uuid.uuid4())
+        
+        # Validate parent category exists if specified
+        if category_data.parent_id:
+            parent = await self.get_category_by_id(category_data.parent_id)
+            if not parent:
+                raise ValueError(f"Parent category {category_data.parent_id} not found")
+        
+        # Calculate level and path
+        level, path = await self._calculate_level_and_path(category_data.parent_id, category_data.name)
+        
+        # Create category document
+        now = datetime.utcnow()
+        category_doc = {
+            "id": category_id,
+            "name": category_data.name,
+            "description": category_data.description,
+            "parent_id": category_data.parent_id,
+            "color": category_data.color,
+            "icon": category_data.icon,
+            "sort_order": category_data.sort_order,
+            "is_active": category_data.is_active,
+            "level": level,
+            "path": path,
+            "item_count": 0,
+            "subcategory_count": 0,
+            "created_at": now,
+            "updated_at": now,
+            "created_by": user_id
+        }
+        
+        # Save to Firestore
+        doc_ref = self.db.collection(self.collection_name).document(category_id)
+        doc_ref.set(category_doc)
+        
+        # Update parent's subcategory count
+        if category_data.parent_id:
+            await self._update_subcategory_count(category_data.parent_id)
+        
+        return Category(**category_doc)
+    
+    async def _create_category_mock(self, category_data: CategoryCreate, user_id: str) -> Category:
+        """Create category using mock data"""
+        self._initialize_mock_data()
+        
+        # Generate unique ID
+        category_id = str(uuid.uuid4())
+        
+        # Validate parent category exists if specified
+        if category_data.parent_id:
+            if category_data.parent_id not in self._mock_categories:
+                raise ValueError(f"Parent category {category_data.parent_id} not found")
+        
+        # Calculate level and path
+        level, path = await self._calculate_level_and_path(category_data.parent_id, category_data.name)
+        
+        # Create category
+        now = datetime.utcnow()
+        category = Category(
+            id=category_id,
+            name=category_data.name,
+            description=category_data.description,
+            parent_id=category_data.parent_id,
+            color=category_data.color,
+            icon=category_data.icon,
+            sort_order=category_data.sort_order,
+            is_active=category_data.is_active,
+            level=level,
+            path=path,
+            item_count=0,
+            subcategory_count=0,
+            created_at=now,
+            updated_at=now,
+            created_by=user_id
+        )
+        
+        # Store in mock data
+        self._mock_categories[category_id] = category
+        
+        # Update parent's subcategory count
+        if category_data.parent_id:
+            await self._update_subcategory_count_mock(category_data.parent_id)
+        
+        return category
     
     async def get_category_by_id(self, category_id: str) -> Optional[Category]:
         """Get category by ID"""
         try:
-            if not self.db:
-                return None
-            
-            doc_ref = self.db.collection(self.collection_name).document(category_id)
-            doc = doc_ref.get()
-            
-            if doc.exists:
-                data = doc.to_dict()
-                return Category(**data)
-            return None
-            
+            if self.db:
+                return await self._get_category_by_id_firebase(category_id)
+            else:
+                return await self._get_category_by_id_mock(category_id)
         except Exception as e:
             print(f"Error getting category {category_id}: {str(e)}")
             return None
     
+    async def _get_category_by_id_firebase(self, category_id: str) -> Optional[Category]:
+        """Get category from Firebase"""
+        if not self.db:
+            return None
+            
+        doc_ref = self.db.collection(self.collection_name).document(category_id)
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            data = doc.to_dict()
+            return Category(**data)
+        return None
+    
+    async def _get_category_by_id_mock(self, category_id: str) -> Optional[Category]:
+        """Get category from mock data"""
+        self._initialize_mock_data()
+        return self._mock_categories.get(category_id)
+    
     async def get_all_categories(self, include_inactive: bool = False) -> List[Category]:
         """Get all categories"""
         try:
-            if not self.db:
-                return []
-            
-            query = self.db.collection(self.collection_name)
-            
-            if not include_inactive:
-                query = query.where("is_active", "==", True)
-            
-            query = query.order_by("level").order_by("sort_order").order_by("name")
-            docs = query.stream()
-            
-            categories = []
-            for doc in docs:
-                data = doc.to_dict()
-                categories.append(Category(**data))
-            
-            return categories
-            
+            if self.db:
+                return await self._get_all_categories_firebase(include_inactive)
+            else:
+                return await self._get_all_categories_mock(include_inactive)
         except Exception as e:
             print(f"Error getting categories: {str(e)}")
             return []
     
+    async def _get_all_categories_firebase(self, include_inactive: bool = False) -> List[Category]:
+        """Get all categories from Firebase"""
+        if not self.db:
+            return []
+            
+        query = self.db.collection(self.collection_name)
+        
+        if not include_inactive:
+            query = query.where("is_active", "==", True)
+        
+        query = query.order_by("level").order_by("sort_order").order_by("name")
+        docs = query.stream()
+        
+        categories = []
+        for doc in docs:
+            data = doc.to_dict()
+            categories.append(Category(**data))
+        
+        return categories
+    
+    async def _get_all_categories_mock(self, include_inactive: bool = False) -> List[Category]:
+        """Get all categories from mock data"""
+        self._initialize_mock_data()
+        
+        categories = list(self._mock_categories.values())
+        
+        if not include_inactive:
+            categories = [cat for cat in categories if cat.is_active]
+        
+        # Sort by level, then sort_order, then name
+        categories.sort(key=lambda x: (x.level, x.sort_order, x.name))
+        
+        return categories
+    
     async def get_root_categories(self, include_inactive: bool = False) -> List[Category]:
         """Get root categories (no parent)"""
         try:
-            if not self.db:
-                return []
-            
-            query = self.db.collection(self.collection_name).where("parent_id", "==", None)
-            
-            if not include_inactive:
-                query = query.where("is_active", "==", True)
-            
-            query = query.order_by("sort_order").order_by("name")
-            docs = query.stream()
-            
-            categories = []
-            for doc in docs:
-                data = doc.to_dict()
-                categories.append(Category(**data))
-            
-            return categories
-            
+            if self.db:
+                return await self._get_root_categories_firebase(include_inactive)
+            else:
+                return await self._get_root_categories_mock(include_inactive)
         except Exception as e:
             print(f"Error getting root categories: {str(e)}")
             return []
     
+    async def _get_root_categories_firebase(self, include_inactive: bool = False) -> List[Category]:
+        """Get root categories from Firebase"""
+        if not self.db:
+            return []
+            
+        query = self.db.collection(self.collection_name).where("parent_id", "==", None)
+        
+        if not include_inactive:
+            query = query.where("is_active", "==", True)
+        
+        query = query.order_by("sort_order").order_by("name")
+        docs = query.stream()
+        
+        categories = []
+        for doc in docs:
+            data = doc.to_dict()
+            categories.append(Category(**data))
+        
+        return categories
+    
+    async def _get_root_categories_mock(self, include_inactive: bool = False) -> List[Category]:
+        """Get root categories from mock data"""
+        self._initialize_mock_data()
+        
+        categories = [cat for cat in self._mock_categories.values() if cat.parent_id is None]
+        
+        if not include_inactive:
+            categories = [cat for cat in categories if cat.is_active]
+        
+        # Sort by sort_order, then name
+        categories.sort(key=lambda x: (x.sort_order, x.name))
+        
+        return categories
+    
     async def get_subcategories(self, parent_id: str, include_inactive: bool = False) -> List[Category]:
         """Get subcategories of a parent category"""
         try:
-            if not self.db:
-                return []
-            
-            query = self.db.collection(self.collection_name).where("parent_id", "==", parent_id)
-            
-            if not include_inactive:
-                query = query.where("is_active", "==", True)
-            
-            query = query.order_by("sort_order").order_by("name")
-            docs = query.stream()
-            
-            categories = []
-            for doc in docs:
-                data = doc.to_dict()
-                categories.append(Category(**data))
-            
-            return categories
-            
+            if self.db:
+                return await self._get_subcategories_firebase(parent_id, include_inactive)
+            else:
+                return await self._get_subcategories_mock(parent_id, include_inactive)
         except Exception as e:
             print(f"Error getting subcategories for {parent_id}: {str(e)}")
             return []
+    
+    async def _get_subcategories_firebase(self, parent_id: str, include_inactive: bool = False) -> List[Category]:
+        """Get subcategories from Firebase"""
+        if not self.db:
+            return []
+            
+        query = self.db.collection(self.collection_name).where("parent_id", "==", parent_id)
+        
+        if not include_inactive:
+            query = query.where("is_active", "==", True)
+        
+        query = query.order_by("sort_order").order_by("name")
+        docs = query.stream()
+        
+        categories = []
+        for doc in docs:
+            data = doc.to_dict()
+            categories.append(Category(**data))
+        
+        return categories
+    
+    async def _get_subcategories_mock(self, parent_id: str, include_inactive: bool = False) -> List[Category]:
+        """Get subcategories from mock data"""
+        self._initialize_mock_data()
+        
+        categories = [cat for cat in self._mock_categories.values() if cat.parent_id == parent_id]
+        
+        if not include_inactive:
+            categories = [cat for cat in categories if cat.is_active]
+        
+        # Sort by sort_order, then name
+        categories.sort(key=lambda x: (x.sort_order, x.name))
+        
+        return categories
     
     async def get_category_tree(self, include_inactive: bool = False) -> CategoryTree:
         """Get complete category tree structure"""
@@ -462,6 +770,15 @@ class CategoryService:
             
         except Exception as e:
             print(f"Error updating item count: {str(e)}")
+    
+    async def _update_subcategory_count_mock(self, category_id: str):
+        """Update the subcategory count for a category in mock data"""
+        self._initialize_mock_data()
+        
+        if category_id in self._mock_categories:
+            subcategories = await self._get_subcategories_mock(category_id)
+            self._mock_categories[category_id].subcategory_count = len(subcategories)
+            self._mock_categories[category_id].updated_at = datetime.utcnow()
 
 # Global service instance
 category_service = CategoryService()
