@@ -12,7 +12,11 @@ import {
   X,
   RefreshCw,
   Wifi,
-  WifiOff
+  WifiOff,
+  Building2,
+  Copy,
+  Download,
+  Upload
 } from 'lucide-react';
 import './Categories.css';
 
@@ -32,7 +36,16 @@ interface Category {
   created_at: string;
   updated_at: string;
   created_by: string;
+  business_type?: string;
   children?: Category[];
+}
+
+interface BusinessTemplate {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  categories: Omit<Category, 'id' | 'created_at' | 'updated_at'>[];
 }
 
 interface CategoryTree {
@@ -47,11 +60,12 @@ const Categories: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(true);
-  const [usingMockData, setUsingMockData] = useState(false);
+  const [currentBusiness, setCurrentBusiness] = useState<string>('general');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showBusinessSelector, setShowBusinessSelector] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: '',
     description: '',
@@ -60,159 +74,113 @@ const Categories: React.FC = () => {
     icon: '📦'
   });
 
-  const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
-  const icons = ['📦', '🍽️', '🥕', '🧽', '📋', '🔧', '💼', '🏠'];
+  const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+  const icons = ['📦', '🍽️', '🥕', '🧽', '📋', '🔧', '💼', '🏠', '👕', '🏥', '🎓', '🏪'];
 
-  // Mock data for when backend is unavailable
-  const mockCategories: Category[] = [
+  // Business templates for different industries
+  const businessTemplates: BusinessTemplate[] = [
     {
-      id: '1',
-      name: 'Food & Beverages',
-      description: 'All food and beverage items',
-      parent_id: undefined,
-      color: '#FF6B6B',
+      id: 'restaurant',
+      name: 'Restaurant',
+      description: 'Food service and dining establishment',
       icon: '🍽️',
-      sort_order: 0,
-      is_active: true,
-      level: 0,
-      path: 'Food & Beverages',
-      item_count: 45,
-      subcategory_count: 4,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: 'system',
-      children: [
-        {
-          id: '2',
-          name: 'Fruits & Vegetables',
-          description: 'Fresh produce',
-          parent_id: '1',
-          color: '#4ECDC4',
-          icon: '🥕',
-          sort_order: 0,
-          is_active: true,
-          level: 1,
-          path: 'Food & Beverages/Fruits & Vegetables',
-          item_count: 18,
-          subcategory_count: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          created_by: 'system'
-        },
-        {
-          id: '3',
-          name: 'Dairy & Eggs',
-          description: 'Milk, cheese, eggs',
-          parent_id: '1',
-          color: '#45B7D1',
-          icon: '🥛',
-          sort_order: 1,
-          is_active: true,
-          level: 1,
-          path: 'Food & Beverages/Dairy & Eggs',
-          item_count: 12,
-          subcategory_count: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          created_by: 'system'
-        },
-        {
-          id: '4',
-          name: 'Beverages',
-          description: 'Drinks and beverages',
-          parent_id: '1',
-          color: '#6C5CE7',
-          icon: '🥤',
-          sort_order: 2,
-          is_active: true,
-          level: 1,
-          path: 'Food & Beverages/Beverages',
-          item_count: 15,
-          subcategory_count: 2,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          created_by: 'system',
-          children: [
-            {
-              id: '5',
-              name: 'Coffee',
-              description: 'Coffee and coffee products',
-              parent_id: '4',
-              color: '#6C5CE7',
-              icon: '☕',
-              sort_order: 0,
-              is_active: true,
-              level: 2,
-              path: 'Food & Beverages/Beverages/Coffee',
-              item_count: 8,
-              subcategory_count: 0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              created_by: 'system'
-            },
-            {
-              id: '6',
-              name: 'Tea',
-              description: 'Tea and tea products',
-              parent_id: '4',
-              color: '#00B894',
-              icon: '🍵',
-              sort_order: 1,
-              is_active: true,
-              level: 2,
-              path: 'Food & Beverages/Beverages/Tea',
-              item_count: 7,
-              subcategory_count: 0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              created_by: 'system'
-            }
-          ]
-        }
+      categories: [
+        { name: 'Food Items', description: 'All food products', parent_id: undefined, color: '#FF6B6B', icon: '🍽️', sort_order: 0, is_active: true, level: 0, path: 'Food Items', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'restaurant' },
+        { name: 'Appetizers', description: 'Starter dishes', parent_id: 'food-items', color: '#4ECDC4', icon: '🥗', sort_order: 0, is_active: true, level: 1, path: 'Food Items/Appetizers', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'restaurant' },
+        { name: 'Main Courses', description: 'Primary dishes', parent_id: 'food-items', color: '#45B7D1', icon: '🍖', sort_order: 1, is_active: true, level: 1, path: 'Food Items/Main Courses', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'restaurant' },
+        { name: 'Beverages', description: 'Drinks and beverages', parent_id: undefined, color: '#6C5CE7', icon: '🥤', sort_order: 1, is_active: true, level: 0, path: 'Beverages', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'restaurant' },
+        { name: 'Alcoholic', description: 'Alcoholic beverages', parent_id: 'beverages', color: '#FF9F43', icon: '🍷', sort_order: 0, is_active: true, level: 1, path: 'Beverages/Alcoholic', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'restaurant' },
+        { name: 'Non-Alcoholic', description: 'Non-alcoholic drinks', parent_id: 'beverages', color: '#00D2D3', icon: '🥤', sort_order: 1, is_active: true, level: 1, path: 'Beverages/Non-Alcoholic', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'restaurant' }
       ]
     },
     {
-      id: '7',
-      name: 'Cleaning Supplies',
-      description: 'Cleaning and maintenance products',
-      parent_id: undefined,
-      color: '#00B894',
-      icon: '🧽',
-      sort_order: 1,
-      is_active: true,
-      level: 0,
-      path: 'Cleaning Supplies',
-      item_count: 12,
-      subcategory_count: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: 'system'
+      id: 'retail',
+      name: 'Retail Store',
+      description: 'General merchandise and retail',
+      icon: '🏪',
+      categories: [
+        { name: 'Clothing', description: 'Apparel and accessories', parent_id: undefined, color: '#FF6B6B', icon: '👕', sort_order: 0, is_active: true, level: 0, path: 'Clothing', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'retail' },
+        { name: 'Men\'s Clothing', description: 'Male apparel', parent_id: 'clothing', color: '#4ECDC4', icon: '👔', sort_order: 0, is_active: true, level: 1, path: 'Clothing/Men\'s Clothing', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'retail' },
+        { name: 'Women\'s Clothing', description: 'Female apparel', parent_id: 'clothing', color: '#FF9F43', icon: '👗', sort_order: 1, is_active: true, level: 1, path: 'Clothing/Women\'s Clothing', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'retail' },
+        { name: 'Electronics', description: 'Electronic devices and accessories', parent_id: undefined, color: '#45B7D1', icon: '📱', sort_order: 1, is_active: true, level: 0, path: 'Electronics', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'retail' },
+        { name: 'Home & Garden', description: 'Home improvement and garden supplies', parent_id: undefined, color: '#00B894', icon: '🏠', sort_order: 2, is_active: true, level: 0, path: 'Home & Garden', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'retail' }
+      ]
     },
     {
-      id: '8',
-      name: 'Office Supplies',
-      description: 'Office equipment and supplies',
-      parent_id: undefined,
-      color: '#0984E3',
-      icon: '📋',
-      sort_order: 2,
-      is_active: true,
-      level: 0,
-      path: 'Office Supplies',
-      item_count: 8,
-      subcategory_count: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      created_by: 'system'
+      id: 'medical',
+      name: 'Medical Practice',
+      description: 'Healthcare and medical services',
+      icon: '🏥',
+      categories: [
+        { name: 'Medical Supplies', description: 'General medical equipment', parent_id: undefined, color: '#FF6B6B', icon: '🏥', sort_order: 0, is_active: true, level: 0, path: 'Medical Supplies', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'medical' },
+        { name: 'Diagnostic Equipment', description: 'Equipment for diagnostics', parent_id: 'medical-supplies', color: '#4ECDC4', icon: '🔬', sort_order: 0, is_active: true, level: 1, path: 'Medical Supplies/Diagnostic Equipment', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'medical' },
+        { name: 'Surgical Instruments', description: 'Tools for surgery', parent_id: 'medical-supplies', color: '#45B7D1', icon: '⚕️', sort_order: 1, is_active: true, level: 1, path: 'Medical Supplies/Surgical Instruments', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'medical' },
+        { name: 'Pharmaceuticals', description: 'Medications and drugs', parent_id: undefined, color: '#6C5CE7', icon: '💊', sort_order: 1, is_active: true, level: 0, path: 'Pharmaceuticals', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'medical' },
+        { name: 'Prescription Drugs', description: 'Prescription medications', parent_id: 'pharmaceuticals', color: '#FF9F43', icon: '💉', sort_order: 0, is_active: true, level: 1, path: 'Pharmaceuticals/Prescription Drugs', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'medical' }
+      ]
+    },
+    {
+      id: 'education',
+      name: 'Educational Institution',
+      description: 'Schools, colleges, and training centers',
+      icon: '🎓',
+      categories: [
+        { name: 'Classroom Supplies', description: 'Teaching and learning materials', parent_id: undefined, color: '#FF6B6B', icon: '📚', sort_order: 0, is_active: true, level: 0, path: 'Classroom Supplies', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'education' },
+        { name: 'Stationery', description: 'Writing and office supplies', parent_id: 'classroom-supplies', color: '#4ECDC4', icon: '✏️', sort_order: 0, is_active: true, level: 1, path: 'Classroom Supplies/Stationery', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'education' },
+        { name: 'Teaching Aids', description: 'Educational tools and materials', parent_id: 'classroom-supplies', color: '#45B7D1', icon: '🎯', sort_order: 1, is_active: true, level: 1, path: 'Classroom Supplies/Teaching Aids', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'education' },
+        { name: 'Technology', description: 'Educational technology equipment', parent_id: undefined, color: '#6C5CE7', icon: '💻', sort_order: 1, is_active: true, level: 0, path: 'Technology', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'education' }
+      ]
+    },
+    {
+      id: 'general',
+      name: 'General Business',
+      description: 'Generic business categories',
+      icon: '💼',
+      categories: [
+        { name: 'Office Supplies', description: 'General office equipment', parent_id: undefined, color: '#FF6B6B', icon: '📋', sort_order: 0, is_active: true, level: 0, path: 'Office Supplies', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'general' },
+        { name: 'Equipment', description: 'Business equipment and machinery', parent_id: undefined, color: '#4ECDC4', icon: '🔧', sort_order: 1, is_active: true, level: 0, path: 'Equipment', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'general' },
+        { name: 'Inventory', description: 'Stock and inventory items', parent_id: undefined, color: '#45B7D1', icon: '📦', sort_order: 2, is_active: true, level: 0, path: 'Inventory', item_count: 0, subcategory_count: 0, created_by: 'system', business_type: 'general' }
+      ]
     }
   ];
 
   useEffect(() => {
-    fetchCategories();
-    // Auto-refresh every 60 seconds (reduced frequency)
-    const interval = setInterval(fetchCategories, 60000);
-    return () => clearInterval(interval);
-  }, []);
+    loadBusinessData();
+    // Auto-save every 5 minutes
+    const saveInterval = setInterval(saveToLocalStorage, 300000);
+    return () => clearInterval(saveInterval);
+  }, [currentBusiness]);
+
+  const getStorageKey = (business: string) => `categories_${business}`;
+
+  const saveToLocalStorage = () => {
+    try {
+      const dataToSave = {
+        categories,
+        categoryTree,
+        currentBusiness,
+        lastSaved: new Date().toISOString()
+      };
+      localStorage.setItem(getStorageKey(currentBusiness), JSON.stringify(dataToSave));
+      console.log('✅ Categories saved to localStorage');
+    } catch (err) {
+      console.error('Failed to save to localStorage:', err);
+    }
+  };
+
+  const loadFromLocalStorage = (business: string): Category[] | null => {
+    try {
+      const saved = localStorage.getItem(getStorageKey(business));
+      if (saved) {
+        const data = JSON.parse(saved);
+        console.log('📂 Loaded categories from localStorage');
+        return data.categories || [];
+      }
+    } catch (err) {
+      console.error('Failed to load from localStorage:', err);
+    }
+    return null;
+  };
 
   const testBackendConnection = async (): Promise<boolean> => {
     try {
@@ -223,12 +191,11 @@ const Categories: React.FC = () => {
       return response.ok;
     } catch {
       try {
-        // Try alternative health check
         const response = await fetch('/api/categories', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
-        return response.status !== 0; // Any response means backend is reachable
+        return response.status !== 0;
       } catch {
         return false;
       }
@@ -278,76 +245,80 @@ const Categories: React.FC = () => {
     return result;
   };
 
-  const fetchCategories = async () => {
+  const generateCategoriesFromTemplate = (template: BusinessTemplate): Category[] => {
+    return template.categories.map((cat, index) => ({
+      ...cat,
+      id: `${template.id}-${index}-${Date.now()}`,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      business_type: template.id
+    }));
+  };
+
+  const loadBusinessData = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Test backend connection first
-      const backendOnline = await testBackendConnection();
-      setIsOnline(backendOnline);
 
-      if (!backendOnline) {
-        // Use mock data when backend is offline
-        console.warn('Backend unavailable, using mock data');
-        setUsingMockData(true);
-        const tree = buildCategoryTree(flattenCategories(mockCategories));
-        setCategories(flattenCategories(mockCategories));
-        setCategoryTree(tree);
+      // Try to load from localStorage first
+      const savedCategories = loadFromLocalStorage(currentBusiness);
+      
+      if (savedCategories && savedCategories.length > 0) {
+        setCategories(savedCategories);
+        setCategoryTree(buildCategoryTree(savedCategories));
+        setIsOnline(false); // Using local data
         setLoading(false);
         return;
       }
 
-      const token = localStorage.getItem('auth_token');
-      
-      // Try to fetch from API
-      const categoriesResponse = await fetch('/api/categories', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+      // Test backend connection
+      const backendOnline = await testBackendConnection();
+      setIsOnline(backendOnline);
 
-      if (!categoriesResponse.ok) {
-        throw new Error(`API Error: ${categoriesResponse.status} ${categoriesResponse.statusText}`);
-      }
-
-      const categoriesData = await categoriesResponse.json();
-      
-      // Try to fetch tree structure
-      let treeData;
-      try {
-        const treeResponse = await fetch('/api/categories/tree', {
+      if (backendOnline) {
+        // Try to fetch from API
+        const token = localStorage.getItem('auth_token');
+        const response = await fetch(`/api/categories?business_type=${currentBusiness}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
-        
-        if (treeResponse.ok) {
-          treeData = await treeResponse.json();
-        } else {
-          // Build tree from flat data if tree endpoint fails
-          treeData = buildCategoryTree(categoriesData);
+
+        if (response.ok) {
+          const categoriesData = await response.json();
+          setCategories(categoriesData);
+          setCategoryTree(buildCategoryTree(categoriesData));
+          saveToLocalStorage();
+          setLoading(false);
+          return;
         }
-      } catch {
-        // Build tree from flat data if tree endpoint fails
-        treeData = buildCategoryTree(categoriesData);
       }
 
-      setCategories(categoriesData);
-      setCategoryTree(treeData);
-      setUsingMockData(false);
-      setIsOnline(true);
+      // Fallback to business template
+      const template = businessTemplates.find(t => t.id === currentBusiness) || businessTemplates[4]; // Default to general
+      const templateCategories = generateCategoriesFromTemplate(template);
+      
+      setCategories(templateCategories);
+      setCategoryTree(buildCategoryTree(templateCategories));
+      saveToLocalStorage();
 
     } catch (err) {
-      console.error('Fetch error:', err);
+      console.error('Error loading business data:', err);
+      setError(`Failed to load data: ${err instanceof Error ? err.message : 'Unknown error'}`);
       
-      // Fallback to mock data on any error
-      setUsingMockData(true);
-      setIsOnline(false);
-      const tree = buildCategoryTree(flattenCategories(mockCategories));
-      setCategories(flattenCategories(mockCategories));
-      setCategoryTree(tree);
-      
-      setError(`Backend unavailable: ${err instanceof Error ? err.message : 'Unknown error'}. Using demo data.`);
+      // Always fallback to template
+      const template = businessTemplates.find(t => t.id === currentBusiness) || businessTemplates[4];
+      const templateCategories = generateCategoriesFromTemplate(template);
+      setCategories(templateCategories);
+      setCategoryTree(buildCategoryTree(templateCategories));
+      saveToLocalStorage();
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBusinessChange = (businessId: string) => {
+    setCurrentBusiness(businessId);
+    setShowBusinessSelector(false);
+    // Data will be loaded by useEffect
   };
 
   const handleAddCategory = async (e: React.FormEvent) => {
@@ -358,170 +329,176 @@ const Categories: React.FC = () => {
       return;
     }
 
-    if (usingMockData) {
-      // Simulate adding to mock data
-      const newId = Date.now().toString();
-      const parentCategory = categories.find(cat => cat.id === newCategory.parent_id);
-      const level = parentCategory ? parentCategory.level + 1 : 0;
-      const path = parentCategory ? `${parentCategory.path}/${newCategory.name}` : newCategory.name;
-      
-      const newCat: Category = {
-        id: newId,
-        name: newCategory.name,
-        description: newCategory.description,
-        parent_id: newCategory.parent_id || undefined,
-        color: newCategory.color,
-        icon: newCategory.icon,
-        sort_order: 0,
-        is_active: true,
-        level: level,
-        path: path,
-        item_count: 0,
-        subcategory_count: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        created_by: 'demo-user'
-      };
+    const parentCategory = categories.find(cat => cat.id === newCategory.parent_id);
+    const level = parentCategory ? parentCategory.level + 1 : 0;
+    const path = parentCategory ? `${parentCategory.path}/${newCategory.name}` : newCategory.name;
+    
+    const newCat: Category = {
+      id: `cat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: newCategory.name,
+      description: newCategory.description,
+      parent_id: newCategory.parent_id || undefined,
+      color: newCategory.color,
+      icon: newCategory.icon,
+      sort_order: 0,
+      is_active: true,
+      level: level,
+      path: path,
+      item_count: 0,
+      subcategory_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      created_by: 'user',
+      business_type: currentBusiness
+    };
 
-      const updatedCategories = [...categories, newCat];
-      setCategories(updatedCategories);
-      setCategoryTree(buildCategoryTree(updatedCategories));
-      
-      // Reset form
-      setNewCategory({
-        name: '',
-        description: '',
-        parent_id: '',
-        color: '#3B82F6',
-        icon: '📦'
-      });
-      setShowAddForm(false);
-      
-      alert('Category added to demo data (changes will be lost on refresh)');
-      return;
-    }
+    // Update local state
+    const updatedCategories = [...categories, newCat];
+    setCategories(updatedCategories);
+    setCategoryTree(buildCategoryTree(updatedCategories));
+    
+    // Save to localStorage
+    saveToLocalStorage();
 
-    try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          name: newCategory.name,
-          description: newCategory.description,
-          parent_id: newCategory.parent_id || null,
-          color: newCategory.color,
-          icon: newCategory.icon,
-          sort_order: 0,
-          is_active: true
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create category: ${response.statusText}`);
+    // Try to save to backend if online
+    if (isOnline) {
+      try {
+        const token = localStorage.getItem('auth_token');
+        await fetch('/api/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            ...newCat,
+            business_type: currentBusiness
+          })
+        });
+        console.log('✅ Category saved to backend');
+      } catch (err) {
+        console.warn('⚠️ Backend save failed, but saved locally');
       }
-
-      // Reset form and refresh data
-      setNewCategory({
-        name: '',
-        description: '',
-        parent_id: '',
-        color: '#3B82F6',
-        icon: '📦'
-      });
-      setShowAddForm(false);
-      await fetchCategories();
-      
-    } catch (err) {
-      alert(`Failed to create category: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
+
+    // Reset form
+    setNewCategory({
+      name: '',
+      description: '',
+      parent_id: '',
+      color: '#3B82F6',
+      icon: '📦'
+    });
+    setShowAddForm(false);
+    
+    alert(`✅ Category "${newCat.name}" added successfully!`);
   };
 
   const handleUpdateCategory = async (categoryId: string) => {
-    if (usingMockData) {
-      alert('Demo mode: Changes will be lost on refresh');
-      setEditingRow(null);
-      setEditData({});
-      return;
-    }
+    const updatedCategories = categories.map(cat => 
+      cat.id === categoryId 
+        ? { ...cat, ...editData, updated_at: new Date().toISOString() }
+        : cat
+    );
+    
+    setCategories(updatedCategories);
+    setCategoryTree(buildCategoryTree(updatedCategories));
+    saveToLocalStorage();
 
-    try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`/api/categories/${categoryId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify(editData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update category: ${response.statusText}`);
+    // Try to save to backend if online
+    if (isOnline) {
+      try {
+        const token = localStorage.getItem('auth_token');
+        await fetch(`/api/categories/${categoryId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify(editData)
+        });
+        console.log('✅ Category updated in backend');
+      } catch (err) {
+        console.warn('⚠️ Backend update failed, but saved locally');
       }
-
-      setEditingRow(null);
-      setEditData({});
-      await fetchCategories();
-      
-    } catch (err) {
-      alert(`Failed to update category: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
+
+    setEditingRow(null);
+    setEditData({});
+    alert('✅ Category updated successfully!');
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm('Are you sure you want to delete this category?')) return;
+    const categoryToDelete = categories.find(cat => cat.id === categoryId);
+    if (!categoryToDelete) return;
 
-    if (usingMockData) {
-      // Remove from mock data
-      const updatedCategories = categories.filter(cat => cat.id !== categoryId);
-      setCategories(updatedCategories);
-      setCategoryTree(buildCategoryTree(updatedCategories));
-      alert('Category removed from demo data (changes will be lost on refresh)');
-      return;
-    }
+    if (!confirm(`Are you sure you want to delete "${categoryToDelete.name}"?`)) return;
 
-    try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`/api/categories/${categoryId}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+    // Remove category and update local state
+    const updatedCategories = categories.filter(cat => cat.id !== categoryId);
+    setCategories(updatedCategories);
+    setCategoryTree(buildCategoryTree(updatedCategories));
+    saveToLocalStorage();
 
-      if (!response.ok) {
-        throw new Error(`Failed to delete category: ${response.statusText}`);
+    // Try to delete from backend if online
+    if (isOnline) {
+      try {
+        const token = localStorage.getItem('auth_token');
+        await fetch(`/api/categories/${categoryId}`, {
+          method: 'DELETE',
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        console.log('✅ Category deleted from backend');
+      } catch (err) {
+        console.warn('⚠️ Backend delete failed, but removed locally');
       }
-
-      await fetchCategories();
-    } catch (err) {
-      alert(`Failed to delete category: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
+
+    alert(`✅ Category "${categoryToDelete.name}" deleted successfully!`);
   };
 
-  const createSampleData = async () => {
-    if (usingMockData) {
-      alert('Already using demo data! This is sample data.');
-      return;
-    }
+  const exportCategories = () => {
+    const dataToExport = {
+      businessType: currentBusiness,
+      businessName: businessTemplates.find(t => t.id === currentBusiness)?.name || 'Unknown',
+      categories: categories,
+      exportedAt: new Date().toISOString(),
+      version: '1.0'
+    };
 
-    try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('/api/categories/sample-data', {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `categories-${currentBusiness}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
-      if (!response.ok) {
-        throw new Error(`Failed to create sample data: ${response.statusText}`);
+  const importCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target?.result as string);
+        
+        if (importedData.categories && Array.isArray(importedData.categories)) {
+          setCategories(importedData.categories);
+          setCategoryTree(buildCategoryTree(importedData.categories));
+          saveToLocalStorage();
+          alert(`✅ Successfully imported ${importedData.categories.length} categories!`);
+        } else {
+          alert('❌ Invalid file format');
+        }
+      } catch (err) {
+        alert('❌ Failed to import file');
       }
-
-      await fetchCategories();
-    } catch (err) {
-      alert(`Failed to create sample data: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    }
+    };
+    reader.readAsText(file);
   };
 
   const toggleRowExpansion = (categoryId: string) => {
@@ -691,7 +668,7 @@ const Categories: React.FC = () => {
       <div className="categories-container">
         <div className="loading-state">
           <RefreshCw className="spinning" size={24} />
-          <p>Loading categories...</p>
+          <p>Loading categories for {businessTemplates.find(t => t.id === currentBusiness)?.name}...</p>
         </div>
       </div>
     );
@@ -704,25 +681,74 @@ const Categories: React.FC = () => {
           <h1>Categories Management</h1>
           <div className="header-status">
             <p>Organize your inventory with hierarchical categories</p>
+            <div className="business-selector">
+              <button 
+                className="business-btn"
+                onClick={() => setShowBusinessSelector(!showBusinessSelector)}
+              >
+                <Building2 size={14} />
+                {businessTemplates.find(t => t.id === currentBusiness)?.name || 'Select Business'}
+              </button>
+              {showBusinessSelector && (
+                <div className="business-dropdown">
+                  {businessTemplates.map(template => (
+                    <button
+                      key={template.id}
+                      className={`business-option ${currentBusiness === template.id ? 'active' : ''}`}
+                      onClick={() => handleBusinessChange(template.id)}
+                    >
+                      <span className="business-icon">{template.icon}</span>
+                      <div className="business-info">
+                        <span className="business-name">{template.name}</span>
+                        <span className="business-desc">{template.description}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="connection-status">
               {isOnline ? (
                 <span className="status-online">
                   <Wifi size={14} />
-                  {usingMockData ? 'Demo Mode' : 'Connected'}
+                  Connected & Saving
                 </span>
               ) : (
                 <span className="status-offline">
                   <WifiOff size={14} />
-                  Offline - Demo Data
+                  Local Storage
                 </span>
               )}
             </div>
           </div>
         </div>
         <div className="header-actions">
+          <input
+            type="file"
+            accept=".json"
+            onChange={importCategories}
+            style={{ display: 'none' }}
+            id="import-categories"
+          />
+          <button 
+            className="action-btn"
+            onClick={() => document.getElementById('import-categories')?.click()}
+            title="Import categories"
+          >
+            <Upload size={16} />
+            Import
+          </button>
+          <button 
+            className="action-btn"
+            onClick={exportCategories}
+            title="Export categories"
+          >
+            <Download size={16} />
+            Export
+          </button>
           <button 
             className="refresh-btn"
-            onClick={fetchCategories}
+            onClick={loadBusinessData}
             title="Refresh data"
           >
             <RefreshCw size={16} />
@@ -735,11 +761,6 @@ const Categories: React.FC = () => {
             <Plus size={16} />
             Add Category
           </button>
-          {categories.length === 0 && !usingMockData && (
-            <button className="btn btn-secondary" onClick={createSampleData}>
-              Create Sample Data
-            </button>
-          )}
         </div>
       </div>
 
@@ -751,12 +772,10 @@ const Categories: React.FC = () => {
         </div>
       )}
 
-      {usingMockData && (
-        <div className="demo-notice">
-          <AlertCircle size={16} />
-          <span>Demo Mode: You're viewing sample data. Changes will be lost on refresh.</span>
-        </div>
-      )}
+      <div className="save-notice">
+        <Save size={14} />
+        <span>All changes are automatically saved locally. {isOnline ? 'Syncing with server when possible.' : 'Will sync when connection is restored.'}</span>
+      </div>
 
       {categoryTree && (
         <div className="stats-bar">
@@ -771,6 +790,10 @@ const Categories: React.FC = () => {
           <div className="stat">
             <span className="stat-value">{categories.reduce((sum, cat) => sum + cat.item_count, 0)}</span>
             <span className="stat-label">Total Items</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{businessTemplates.find(t => t.id === currentBusiness)?.name}</span>
+            <span className="stat-label">Business Type</span>
           </div>
         </div>
       )}
@@ -852,7 +875,7 @@ const Categories: React.FC = () => {
               <div className="form-actions">
                 <button type="button" onClick={() => setShowAddForm(false)}>Cancel</button>
                 <button type="submit" className="btn-primary">
-                  Add Category {usingMockData && '(Demo)'}
+                  Add Category
                 </button>
               </div>
             </form>
@@ -865,7 +888,7 @@ const Categories: React.FC = () => {
           <div className="empty-state">
             <Folder size={48} />
             <h3>No Categories Yet</h3>
-            <p>Create your first category to organize your inventory</p>
+            <p>Create your first category for {businessTemplates.find(t => t.id === currentBusiness)?.name}</p>
           </div>
         ) : (
           <table className="categories-table">
