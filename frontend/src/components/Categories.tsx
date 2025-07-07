@@ -15,17 +15,8 @@ import {
   Download,
   Calendar,
   AlertCircle,
-  CheckCircle,
   XCircle,
-  MoreHorizontal,
-  FolderPlus,
-  Settings,
-  Filter,
-  SortAsc,
-  Eye,
-  Archive,
-  Star,
-  Copy
+  FolderPlus
 } from 'lucide-react';
 import './Categories.css';
 
