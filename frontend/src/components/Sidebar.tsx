@@ -9,13 +9,15 @@ import {
   Zap,
   Link,
   Activity,
-  Folder
+  Folder,
+  Box
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
   { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
   { name: 'Inventory', href: '/inventory', icon: Package },
+  { name: 'Products', href: '/products', icon: Box },
   { name: 'Categories', href: '/categories', icon: Folder },
   { name: 'Suppliers', href: '/suppliers', icon: Building },
   { name: 'Integrations', href: '/integrations', icon: Zap },
