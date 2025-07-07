@@ -3,21 +3,16 @@ import {
   Plus,
   Search,
   Filter,
-  Edit,
   Trash2,
   Package,
   Tag,
   DollarSign,
-  ShoppingCart,
-  Eye,
-  Copy,
   Download,
   Upload,
   Grid,
   List,
   CheckSquare,
   X,
-  Save,
   RefreshCw,
   AlertCircle,
   Smartphone,
@@ -81,14 +76,13 @@ const Inventory: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentBusiness, setCurrentBusiness] = useState<string>('general');
+  const [currentBusiness] = useState<string>('general');
   
   // UI States
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [bulkEditMode, setBulkEditMode] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<string | null>(null);
   
   // Search and Filter States
   const [searchTerm, setSearchTerm] = useState('');
@@ -247,16 +241,7 @@ const Inventory: React.FC = () => {
     alert(`✅ Product "${newProduct.name}" added successfully!`);
   };
 
-  const handleUpdateProduct = (productId: string, updates: Partial<Product>) => {
-    const updatedProducts = products.map(product => 
-      product.id === productId 
-        ? { ...product, ...updates, updated_at: new Date().toISOString() }
-        : product
-    );
-    setProducts(updatedProducts);
-    saveProductsToStorage(updatedProducts);
-    setEditingProduct(null);
-  };
+
 
   const handleDeleteProduct = (productId: string) => {
     const productToDelete = products.find(p => p.id === productId);
@@ -593,20 +578,14 @@ const Inventory: React.FC = () => {
                         <Smartphone size={16} />
                         {product.brand}
                       </div>
-                      <div className="product-actions">
-                        <button 
-                          className="edit-btn"
-                          onClick={() => setEditingProduct(product.id)}
-                        >
-                          <Edit size={14} />
-                        </button>
-                        <button 
-                          className="delete-btn"
-                          onClick={() => handleDeleteProduct(product.id)}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
+                                             <div className="product-actions">
+                         <button 
+                           className="delete-btn"
+                           onClick={() => handleDeleteProduct(product.id)}
+                         >
+                           <Trash2 size={14} />
+                         </button>
+                       </div>
                     </div>
                     
                     <div className="product-info">
