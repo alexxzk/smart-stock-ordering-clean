@@ -27,6 +27,12 @@ from app.routes import integrations as integrations_router
 from app.firebase_init import get_firestore_client
 from app.api.cache import router as cache_router
 
+# Import POS integrations (optional)
+try:
+    from app.api import pos_integrations as pos_integrations_router
+except ImportError:
+    pos_integrations_router = None
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -163,6 +169,15 @@ app.include_router(
     tags=["Cache Management"],
     dependencies=[Depends(verify_token)]
 )
+
+# Include POS integrations router if available
+if pos_integrations_router:
+    app.include_router(
+        pos_integrations_router.router,
+        prefix="/api/pos-integrations", 
+        tags=["POS Integrations"],
+        dependencies=[Depends(verify_token)]
+    )
 
 @app.get("/")
 async def root():
