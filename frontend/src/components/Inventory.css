@@ -797,7 +797,7 @@
 
 .category-info {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
   padding: 12px 16px;
   background: #ecfdf5;
@@ -807,6 +807,43 @@
   color: #065f46;
   font-size: 14px;
   font-weight: 500;
+}
+
+.category-info > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-models-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #e3f2fd;
+  border-radius: 4px;
+  border-left: 3px solid #2196f3;
+  color: #0d47a1;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.reset-categories-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-categories-btn:hover {
+  background: #059669;
 }
 
 .stock-level-indicator {

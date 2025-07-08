@@ -213,7 +213,42 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       
-      // iPhone Models
+      // iPhone Models - Latest to Oldest
+      // iPhone 16 Series (2024)
+      {
+        id: 'iphone-16-pro-max',
+        name: 'iPhone 16 Pro Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 16 Pro Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-16-pro',
+        name: 'iPhone 16 Pro',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 16 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-16-plus',
+        name: 'iPhone 16 Plus',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 16 Plus',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-16',
+        name: 'iPhone 16',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 16',
+        business_type: currentBusiness
+      },
+      
+      // iPhone 15 Series (2023)
       {
         id: 'iphone-15-pro-max',
         name: 'iPhone 15 Pro Max',
@@ -246,6 +281,8 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Apple/iPhone 15',
         business_type: currentBusiness
       },
+      
+      // iPhone 14 Series (2022)
       {
         id: 'iphone-14-pro-max',
         name: 'iPhone 14 Pro Max',
@@ -278,6 +315,8 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Apple/iPhone 14',
         business_type: currentBusiness
       },
+      
+      // iPhone 13 Series (2021)
       {
         id: 'iphone-13-pro-max',
         name: 'iPhone 13 Pro Max',
@@ -295,6 +334,14 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       {
+        id: 'iphone-13-mini',
+        name: 'iPhone 13 Mini',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 13 Mini',
+        business_type: currentBusiness
+      },
+      {
         id: 'iphone-13',
         name: 'iPhone 13',
         parent_id: 'apple',
@@ -302,6 +349,8 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Apple/iPhone 13',
         business_type: currentBusiness
       },
+      
+      // iPhone 12 Series (2020)
       {
         id: 'iphone-12-pro-max',
         name: 'iPhone 12 Pro Max',
@@ -319,11 +368,153 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       {
+        id: 'iphone-12-mini',
+        name: 'iPhone 12 Mini',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 12 Mini',
+        business_type: currentBusiness
+      },
+      {
         id: 'iphone-12',
         name: 'iPhone 12',
         parent_id: 'apple',
         level: 2,
         path: 'Tempered Glass/Apple/iPhone 12',
+        business_type: currentBusiness
+      },
+      
+      // iPhone 11 Series (2019)
+      {
+        id: 'iphone-11-pro-max',
+        name: 'iPhone 11 Pro Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 11 Pro Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-11-pro',
+        name: 'iPhone 11 Pro',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 11 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-11',
+        name: 'iPhone 11',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 11',
+        business_type: currentBusiness
+      },
+      
+      // iPhone XS/XR Series (2018)
+      {
+        id: 'iphone-xs-max',
+        name: 'iPhone XS Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone XS Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-xs',
+        name: 'iPhone XS',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone XS',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-xr',
+        name: 'iPhone XR',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone XR',
+        business_type: currentBusiness
+      },
+      
+      // iPhone X (2017)
+      {
+        id: 'iphone-x',
+        name: 'iPhone X',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone X',
+        business_type: currentBusiness
+      },
+      
+      // iPhone 8 Series (2017)
+      {
+        id: 'iphone-8-plus',
+        name: 'iPhone 8 Plus',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 8 Plus',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-8',
+        name: 'iPhone 8',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 8',
+        business_type: currentBusiness
+      },
+      
+      // iPhone 7 Series (2016)
+      {
+        id: 'iphone-7-plus',
+        name: 'iPhone 7 Plus',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 7 Plus',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-7',
+        name: 'iPhone 7',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 7',
+        business_type: currentBusiness
+      },
+      
+      // iPhone SE Models
+      {
+        id: 'iphone-se-2022',
+        name: 'iPhone SE (2022)',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone SE (2022)',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-se-2020',
+        name: 'iPhone SE (2020)',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone SE (2020)',
+        business_type: currentBusiness
+      },
+      
+      // iPhone 6s Series (2015)
+      {
+        id: 'iphone-6s-plus',
+        name: 'iPhone 6s Plus',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 6s Plus',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-6s',
+        name: 'iPhone 6s',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 6s',
         business_type: currentBusiness
       },
       
@@ -337,7 +528,9 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       
-      // Samsung Galaxy Models
+      // Samsung Galaxy Models - Latest to Oldest
+      
+      // Galaxy S24 Series (2024)
       {
         id: 'galaxy-s24-ultra',
         name: 'Galaxy S24 Ultra',
@@ -362,6 +555,8 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Samsung/Galaxy S24',
         business_type: currentBusiness
       },
+      
+      // Galaxy S23 Series (2023)
       {
         id: 'galaxy-s23-ultra',
         name: 'Galaxy S23 Ultra',
@@ -387,6 +582,16 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       {
+        id: 'galaxy-s23-fe',
+        name: 'Galaxy S23 FE',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S23 FE',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy S22 Series (2022)
+      {
         id: 'galaxy-s22-ultra',
         name: 'Galaxy S22 Ultra',
         parent_id: 'samsung',
@@ -410,12 +615,132 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Samsung/Galaxy S22',
         business_type: currentBusiness
       },
+      
+      // Galaxy S21 Series (2021)
+      {
+        id: 'galaxy-s21-ultra',
+        name: 'Galaxy S21 Ultra',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S21 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s21-plus',
+        name: 'Galaxy S21+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S21+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s21',
+        name: 'Galaxy S21',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S21',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s21-fe',
+        name: 'Galaxy S21 FE',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S21 FE',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy S20 Series (2020)
+      {
+        id: 'galaxy-s20-ultra',
+        name: 'Galaxy S20 Ultra',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S20 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s20-plus',
+        name: 'Galaxy S20+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S20+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s20',
+        name: 'Galaxy S20',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S20',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s20-fe',
+        name: 'Galaxy S20 FE',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S20 FE',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy Note Series
       {
         id: 'galaxy-note-20-ultra',
         name: 'Galaxy Note 20 Ultra',
         parent_id: 'samsung',
         level: 2,
         path: 'Tempered Glass/Samsung/Galaxy Note 20 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-note-20',
+        name: 'Galaxy Note 20',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Note 20',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-note-10-plus',
+        name: 'Galaxy Note 10+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Note 10+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-note-10',
+        name: 'Galaxy Note 10',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Note 10',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-note-9',
+        name: 'Galaxy Note 9',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Note 9',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-note-8',
+        name: 'Galaxy Note 8',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Note 8',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy Z Fold Series
+      {
+        id: 'galaxy-z-fold-6',
+        name: 'Galaxy Z Fold 6',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Fold 6',
         business_type: currentBusiness
       },
       {
@@ -427,11 +752,277 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       {
+        id: 'galaxy-z-fold-4',
+        name: 'Galaxy Z Fold 4',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Fold 4',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-fold-3',
+        name: 'Galaxy Z Fold 3',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Fold 3',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-fold-2',
+        name: 'Galaxy Z Fold 2',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Fold 2',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy Z Flip Series
+      {
+        id: 'galaxy-z-flip-6',
+        name: 'Galaxy Z Flip 6',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Flip 6',
+        business_type: currentBusiness
+      },
+      {
         id: 'galaxy-z-flip-5',
         name: 'Galaxy Z Flip 5',
         parent_id: 'samsung',
         level: 2,
         path: 'Tempered Glass/Samsung/Galaxy Z Flip 5',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-flip-4',
+        name: 'Galaxy Z Flip 4',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Flip 4',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-flip-3',
+        name: 'Galaxy Z Flip 3',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Flip 3',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-flip',
+        name: 'Galaxy Z Flip',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Flip',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy A Series (Popular Models)
+      {
+        id: 'galaxy-a55',
+        name: 'Galaxy A55',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A55',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a54',
+        name: 'Galaxy A54',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A54',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a53',
+        name: 'Galaxy A53',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A53',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a52',
+        name: 'Galaxy A52',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A52',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a51',
+        name: 'Galaxy A51',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A51',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a50',
+        name: 'Galaxy A50',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A50',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a35',
+        name: 'Galaxy A35',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A35',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a34',
+        name: 'Galaxy A34',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A34',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a33',
+        name: 'Galaxy A33',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A33',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a32',
+        name: 'Galaxy A32',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A32',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a25',
+        name: 'Galaxy A25',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A25',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a24',
+        name: 'Galaxy A24',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A24',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a23',
+        name: 'Galaxy A23',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A23',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a22',
+        name: 'Galaxy A22',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A22',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a15',
+        name: 'Galaxy A15',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A15',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a14',
+        name: 'Galaxy A14',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A14',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a13',
+        name: 'Galaxy A13',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A13',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-a12',
+        name: 'Galaxy A12',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy A12',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy S10 Series (2019)
+      {
+        id: 'galaxy-s10-plus',
+        name: 'Galaxy S10+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S10+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s10',
+        name: 'Galaxy S10',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S10',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s10e',
+        name: 'Galaxy S10e',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S10e',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy S9 Series (2018)
+      {
+        id: 'galaxy-s9-plus',
+        name: 'Galaxy S9+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S9+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s9',
+        name: 'Galaxy S9',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S9',
+        business_type: currentBusiness
+      },
+      
+      // Galaxy S8 Series (2017)
+      {
+        id: 'galaxy-s8-plus',
+        name: 'Galaxy S8+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S8+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s8',
+        name: 'Galaxy S8',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S8',
         business_type: currentBusiness
       },
       
@@ -483,10 +1074,11 @@ const Inventory: React.FC = () => {
       const dataToSave = {
         categories: defaultCategories,
         currentBusiness: currentBusiness,
-        lastSaved: new Date().toISOString()
+        lastSaved: new Date().toISOString(),
+        version: '2.0' // Version to track phone model updates
       };
       localStorage.setItem(`categories_${currentBusiness}`, JSON.stringify(dataToSave));
-      console.log('✅ Created default categories');
+      console.log('✅ Created default categories (v2.0 - Comprehensive Phone Models)');
     } catch (err) {
       console.error('Failed to save default categories:', err);
     }
@@ -500,7 +1092,16 @@ const Inventory: React.FC = () => {
       if (saved) {
         const data = JSON.parse(saved);
         const categories = data.categories || [];
+        const version = data.version || '1.0';
+        
+        // Check if we need to update to the new comprehensive phone models
+        if (version !== '2.0') {
+          console.log('🔄 Updating to comprehensive phone models (v2.0)...');
+          return createDefaultCategories();
+        }
+        
         if (categories.length > 0) {
+          console.log(`✅ Loaded ${categories.length} categories from storage (v${version})`);
           return categories;
         }
       }
@@ -509,6 +1110,7 @@ const Inventory: React.FC = () => {
     }
     
     // If no categories found, create default ones for the business
+    console.log('🔄 No categories found, creating defaults...');
     return createDefaultCategories();
   };
 
@@ -1114,6 +1716,20 @@ const Inventory: React.FC = () => {
                    <RefreshCw size={14} />
                    Refresh Categories
                  </button>
+                 <button 
+                   type="button"
+                   onClick={() => {
+                     if (confirm('This will reset all categories to the latest comprehensive phone models. Continue?')) {
+                       localStorage.removeItem(`categories_${currentBusiness}`);
+                       loadData();
+                     }
+                   }}
+                   className="reset-categories-btn"
+                   title="Reset to comprehensive phone models"
+                 >
+                   <Package size={14} />
+                   Reset Categories
+                 </button>
                  <button onClick={() => setShowAddForm(false)}>×</button>
                </div>
              </div>
@@ -1137,6 +1753,12 @@ const Inventory: React.FC = () => {
                    {categories.filter(cat => cat.level === 1).length} brands • 
                    {categories.filter(cat => cat.level === 2).length} phone models
                  </span>
+                 <div className="phone-models-info">
+                   <Smartphone size={14} />
+                   <span style={{ fontSize: '0.9em', color: '#666' }}>
+                     ✨ Comprehensive phone models: iPhone 6s-16, Galaxy S8-S24, A-series, Note, Z-series
+                   </span>
+                 </div>
                </div>
              )}
             
