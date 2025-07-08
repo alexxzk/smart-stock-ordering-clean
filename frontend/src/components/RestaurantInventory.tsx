@@ -7,19 +7,14 @@ import {
   Package,
   Tag,
   DollarSign,
-  Download,
-  Upload,
   Grid,
   List,
-  CheckSquare,
-  X,
   RefreshCw,
   AlertCircle,
   ChefHat,
   Scale,
   Clock,
   Utensils,
-  TrendingDown,
   BarChart3,
   Receipt,
   Minus
@@ -101,7 +96,7 @@ const RestaurantInventory: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showRecipeForm, setShowRecipeForm] = useState(false);
-  const [selectedIngredients, setSelectedIngredients] = useState<Set<string>>(new Set());
+
   
   // Search and Filter States
   const [searchTerm, setSearchTerm] = useState('');
@@ -153,29 +148,7 @@ const RestaurantInventory: React.FC = () => {
   const suppliers = ['Local Supplier', 'Sysco', 'US Foods', 'Gordon Food Service', 'Costco', 'Restaurant Depot', 'Other'];
   const recipeCategories = ['Main Course', 'Appetizer', 'Side Dish', 'Dessert', 'Beverage', 'Salad', 'Soup'];
 
-  // Sample ingredients for different categories
-  const sampleIngredients = {
-    'fruits-vegetables': [
-      'Tomatoes', 'Onions', 'Potatoes', 'Carrots', 'Lettuce', 'Spinach', 'Bell Peppers',
-      'Mushrooms', 'Garlic', 'Ginger', 'Lemons', 'Limes', 'Apples', 'Bananas'
-    ],
-    'meats-seafood': [
-      'Chicken Breast', 'Chicken Thighs', 'Ground Beef', 'Beef Steak', 'Pork Chops',
-      'Bacon', 'Salmon Fillet', 'Shrimp', 'Cod Fillet', 'Schnitzel'
-    ],
-    'dairy-eggs': [
-      'Whole Milk', 'Heavy Cream', 'Butter', 'Mozzarella Cheese', 'Cheddar Cheese',
-      'Parmesan Cheese', 'Large Eggs', 'Cream Cheese'
-    ],
-    'grains-starches': [
-      'White Rice', 'Brown Rice', 'Pasta', 'Bread Flour', 'All-Purpose Flour',
-      'Quinoa', 'Potatoes', 'Sweet Potatoes'
-    ],
-    'spices-condiments': [
-      'Salt', 'Black Pepper', 'Olive Oil', 'Vegetable Oil', 'Oregano', 'Basil',
-      'Paprika', 'Cumin', 'Garlic Powder'
-    ]
-  };
+
 
   useEffect(() => {
     loadData();

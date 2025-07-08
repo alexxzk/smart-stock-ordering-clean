@@ -4,8 +4,6 @@ import {
   TrendingUp,
   Lightbulb,
   MessageSquare,
-  Camera,
-  BarChart3,
   AlertTriangle,
   Target,
   Zap,
@@ -16,7 +14,6 @@ import {
   Sparkles,
   DollarSign,
   Calendar,
-  CloudRain,
   Users
 } from 'lucide-react';
 import './AIAssistant.css';
