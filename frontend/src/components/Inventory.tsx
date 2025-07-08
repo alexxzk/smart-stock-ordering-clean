@@ -155,10 +155,15 @@ const Inventory: React.FC = () => {
     tags: []
   });
 
-  // Predefined options for tempered glass business
+  // Predefined options for different business types
   const glassTypes = ['Clear', 'Full Coverage', 'Privacy', 'Anti-Glare', 'Blue Light', 'Matte'];
   const thicknessOptions = ['0.26mm', '0.33mm', '0.5mm', '0.7mm', '1.0mm'];
   const brands = ['Apple', 'Samsung', 'Google Pixel', 'OnePlus', 'Xiaomi', 'Huawei', 'Other'];
+  
+  // Restaurant ingredient options
+  const restaurantTypes = ['Fresh', 'Frozen', 'Canned', 'Dried', 'Organic', 'Premium', 'Standard'];
+  const measurementUnits = ['kg', 'lbs', 'liters', 'gallons', 'pieces', 'boxes', 'cases', 'bottles'];
+  const restaurantBrands = ['Local Supplier', 'Sysco', 'US Foods', 'Gordon Food Service', 'Costco', 'Restaurant Depot', 'Other'];
 
   useEffect(() => {
     loadData();
@@ -1066,6 +1071,877 @@ const Inventory: React.FC = () => {
         level: 2,
         path: 'Tempered Glass/Google Pixel/Pixel 7',
         business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // RESTAURANT INGREDIENTS SYSTEM
+      // ==============================================
+      
+      // Main Restaurant Ingredients Category
+      {
+        id: 'restaurant-ingredients',
+        name: 'Restaurant Ingredients',
+        level: 0,
+        path: 'Restaurant Ingredients',
+        business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // FRUITS & VEGETABLES
+      // ==============================================
+      {
+        id: 'fruits-vegetables',
+        name: 'Fruits & Vegetables',
+        parent_id: 'restaurant-ingredients',
+        level: 1,
+        path: 'Restaurant Ingredients/Fruits & Vegetables',
+        business_type: currentBusiness
+      },
+      
+      // Fresh Fruits
+      {
+        id: 'apples',
+        name: 'Apples',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Apples',
+        business_type: currentBusiness
+      },
+      {
+        id: 'bananas',
+        name: 'Bananas',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Bananas',
+        business_type: currentBusiness
+      },
+      {
+        id: 'oranges',
+        name: 'Oranges',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Oranges',
+        business_type: currentBusiness
+      },
+      {
+        id: 'lemons',
+        name: 'Lemons',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Lemons',
+        business_type: currentBusiness
+      },
+      {
+        id: 'limes',
+        name: 'Limes',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Limes',
+        business_type: currentBusiness
+      },
+      {
+        id: 'strawberries',
+        name: 'Strawberries',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Strawberries',
+        business_type: currentBusiness
+      },
+      {
+        id: 'blueberries',
+        name: 'Blueberries',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Blueberries',
+        business_type: currentBusiness
+      },
+      {
+        id: 'grapes',
+        name: 'Grapes',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Grapes',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pineapple',
+        name: 'Pineapple',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Pineapple',
+        business_type: currentBusiness
+      },
+      {
+        id: 'avocado',
+        name: 'Avocado',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Avocado',
+        business_type: currentBusiness
+      },
+      
+      // Fresh Vegetables
+      {
+        id: 'tomatoes',
+        name: 'Tomatoes',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Tomatoes',
+        business_type: currentBusiness
+      },
+      {
+        id: 'onions',
+        name: 'Onions',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Onions',
+        business_type: currentBusiness
+      },
+      {
+        id: 'garlic',
+        name: 'Garlic',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Garlic',
+        business_type: currentBusiness
+      },
+      {
+        id: 'potatoes',
+        name: 'Potatoes',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Potatoes',
+        business_type: currentBusiness
+      },
+      {
+        id: 'carrots',
+        name: 'Carrots',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Carrots',
+        business_type: currentBusiness
+      },
+      {
+        id: 'celery',
+        name: 'Celery',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Celery',
+        business_type: currentBusiness
+      },
+      {
+        id: 'lettuce',
+        name: 'Lettuce',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Lettuce',
+        business_type: currentBusiness
+      },
+      {
+        id: 'spinach',
+        name: 'Spinach',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Spinach',
+        business_type: currentBusiness
+      },
+      {
+        id: 'bell-peppers',
+        name: 'Bell Peppers',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Bell Peppers',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cucumbers',
+        name: 'Cucumbers',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Cucumbers',
+        business_type: currentBusiness
+      },
+      {
+        id: 'mushrooms',
+        name: 'Mushrooms',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Mushrooms',
+        business_type: currentBusiness
+      },
+      {
+        id: 'broccoli',
+        name: 'Broccoli',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Broccoli',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cauliflower',
+        name: 'Cauliflower',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Cauliflower',
+        business_type: currentBusiness
+      },
+      
+      // Herbs & Spices
+      {
+        id: 'basil',
+        name: 'Fresh Basil',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Fresh Basil',
+        business_type: currentBusiness
+      },
+      {
+        id: 'parsley',
+        name: 'Fresh Parsley',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Fresh Parsley',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cilantro',
+        name: 'Fresh Cilantro',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Fresh Cilantro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'thyme',
+        name: 'Fresh Thyme',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Fresh Thyme',
+        business_type: currentBusiness
+      },
+      {
+        id: 'rosemary',
+        name: 'Fresh Rosemary',
+        parent_id: 'fruits-vegetables',
+        level: 2,
+        path: 'Restaurant Ingredients/Fruits & Vegetables/Fresh Rosemary',
+        business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // DRY FOODS & PANTRY
+      // ==============================================
+      {
+        id: 'dry-foods',
+        name: 'Dry Foods & Pantry',
+        parent_id: 'restaurant-ingredients',
+        level: 1,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry',
+        business_type: currentBusiness
+      },
+      
+      // Grains & Rice
+      {
+        id: 'white-rice',
+        name: 'White Rice',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/White Rice',
+        business_type: currentBusiness
+      },
+      {
+        id: 'brown-rice',
+        name: 'Brown Rice',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Brown Rice',
+        business_type: currentBusiness
+      },
+      {
+        id: 'quinoa',
+        name: 'Quinoa',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Quinoa',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pasta-spaghetti',
+        name: 'Spaghetti Pasta',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Spaghetti Pasta',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pasta-penne',
+        name: 'Penne Pasta',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Penne Pasta',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pasta-fettuccine',
+        name: 'Fettuccine Pasta',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Fettuccine Pasta',
+        business_type: currentBusiness
+      },
+      {
+        id: 'all-purpose-flour',
+        name: 'All-Purpose Flour',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/All-Purpose Flour',
+        business_type: currentBusiness
+      },
+      {
+        id: 'bread-flour',
+        name: 'Bread Flour',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Bread Flour',
+        business_type: currentBusiness
+      },
+      {
+        id: 'sugar',
+        name: 'Sugar',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Sugar',
+        business_type: currentBusiness
+      },
+      {
+        id: 'salt',
+        name: 'Salt',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Salt',
+        business_type: currentBusiness
+      },
+      {
+        id: 'black-pepper',
+        name: 'Black Pepper',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Black Pepper',
+        business_type: currentBusiness
+      },
+      {
+        id: 'olive-oil',
+        name: 'Olive Oil',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Olive Oil',
+        business_type: currentBusiness
+      },
+      {
+        id: 'vegetable-oil',
+        name: 'Vegetable Oil',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Vegetable Oil',
+        business_type: currentBusiness
+      },
+      {
+        id: 'canned-tomatoes',
+        name: 'Canned Tomatoes',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Canned Tomatoes',
+        business_type: currentBusiness
+      },
+      {
+        id: 'tomato-paste',
+        name: 'Tomato Paste',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Tomato Paste',
+        business_type: currentBusiness
+      },
+      {
+        id: 'chicken-stock',
+        name: 'Chicken Stock',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Chicken Stock',
+        business_type: currentBusiness
+      },
+      {
+        id: 'vegetable-stock',
+        name: 'Vegetable Stock',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Vegetable Stock',
+        business_type: currentBusiness
+      },
+      {
+        id: 'dried-oregano',
+        name: 'Dried Oregano',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Dried Oregano',
+        business_type: currentBusiness
+      },
+      {
+        id: 'dried-basil',
+        name: 'Dried Basil',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Dried Basil',
+        business_type: currentBusiness
+      },
+      {
+        id: 'paprika',
+        name: 'Paprika',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Paprika',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cumin',
+        name: 'Cumin',
+        parent_id: 'dry-foods',
+        level: 2,
+        path: 'Restaurant Ingredients/Dry Foods & Pantry/Cumin',
+        business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // MEATS & SEAFOOD
+      // ==============================================
+      {
+        id: 'meats-seafood',
+        name: 'Meats & Seafood',
+        parent_id: 'restaurant-ingredients',
+        level: 1,
+        path: 'Restaurant Ingredients/Meats & Seafood',
+        business_type: currentBusiness
+      },
+      
+      // Fresh Meats
+      {
+        id: 'chicken-breast',
+        name: 'Chicken Breast',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Chicken Breast',
+        business_type: currentBusiness
+      },
+      {
+        id: 'chicken-thighs',
+        name: 'Chicken Thighs',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Chicken Thighs',
+        business_type: currentBusiness
+      },
+      {
+        id: 'ground-beef',
+        name: 'Ground Beef',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Ground Beef',
+        business_type: currentBusiness
+      },
+      {
+        id: 'beef-steak',
+        name: 'Beef Steak',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Beef Steak',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pork-chops',
+        name: 'Pork Chops',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Pork Chops',
+        business_type: currentBusiness
+      },
+      {
+        id: 'bacon',
+        name: 'Bacon',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Bacon',
+        business_type: currentBusiness
+      },
+      {
+        id: 'italian-sausage',
+        name: 'Italian Sausage',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Italian Sausage',
+        business_type: currentBusiness
+      },
+      {
+        id: 'lamb-chops',
+        name: 'Lamb Chops',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Lamb Chops',
+        business_type: currentBusiness
+      },
+      
+      // Seafood
+      {
+        id: 'salmon-fillet',
+        name: 'Salmon Fillet',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Salmon Fillet',
+        business_type: currentBusiness
+      },
+      {
+        id: 'shrimp',
+        name: 'Shrimp',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Shrimp',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cod-fillet',
+        name: 'Cod Fillet',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Cod Fillet',
+        business_type: currentBusiness
+      },
+      {
+        id: 'tuna-steak',
+        name: 'Tuna Steak',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Tuna Steak',
+        business_type: currentBusiness
+      },
+      {
+        id: 'crab-meat',
+        name: 'Crab Meat',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Crab Meat',
+        business_type: currentBusiness
+      },
+      {
+        id: 'lobster-tail',
+        name: 'Lobster Tail',
+        parent_id: 'meats-seafood',
+        level: 2,
+        path: 'Restaurant Ingredients/Meats & Seafood/Lobster Tail',
+        business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // DAIRY & EGGS
+      // ==============================================
+      {
+        id: 'dairy-eggs',
+        name: 'Dairy & Eggs',
+        parent_id: 'restaurant-ingredients',
+        level: 1,
+        path: 'Restaurant Ingredients/Dairy & Eggs',
+        business_type: currentBusiness
+      },
+      
+      // Milk Products
+      {
+        id: 'whole-milk',
+        name: 'Whole Milk',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Whole Milk',
+        business_type: currentBusiness
+      },
+      {
+        id: 'heavy-cream',
+        name: 'Heavy Cream',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Heavy Cream',
+        business_type: currentBusiness
+      },
+      {
+        id: 'sour-cream',
+        name: 'Sour Cream',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Sour Cream',
+        business_type: currentBusiness
+      },
+      {
+        id: 'butter',
+        name: 'Butter',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Butter',
+        business_type: currentBusiness
+      },
+      
+      // Cheese
+      {
+        id: 'mozzarella-cheese',
+        name: 'Mozzarella Cheese',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Mozzarella Cheese',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cheddar-cheese',
+        name: 'Cheddar Cheese',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Cheddar Cheese',
+        business_type: currentBusiness
+      },
+      {
+        id: 'parmesan-cheese',
+        name: 'Parmesan Cheese',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Parmesan Cheese',
+        business_type: currentBusiness
+      },
+      {
+        id: 'cream-cheese',
+        name: 'Cream Cheese',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Cream Cheese',
+        business_type: currentBusiness
+      },
+      {
+        id: 'feta-cheese',
+        name: 'Feta Cheese',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Feta Cheese',
+        business_type: currentBusiness
+      },
+      
+      // Eggs
+      {
+        id: 'large-eggs',
+        name: 'Large Eggs',
+        parent_id: 'dairy-eggs',
+        level: 2,
+        path: 'Restaurant Ingredients/Dairy & Eggs/Large Eggs',
+        business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // BEVERAGES
+      // ==============================================
+      {
+        id: 'beverages',
+        name: 'Beverages',
+        parent_id: 'restaurant-ingredients',
+        level: 1,
+        path: 'Restaurant Ingredients/Beverages',
+        business_type: currentBusiness
+      },
+      
+      // Coffee & Tea
+      {
+        id: 'coffee-beans',
+        name: 'Coffee Beans',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Coffee Beans',
+        business_type: currentBusiness
+      },
+      {
+        id: 'ground-coffee',
+        name: 'Ground Coffee',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Ground Coffee',
+        business_type: currentBusiness
+      },
+      {
+        id: 'black-tea',
+        name: 'Black Tea',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Black Tea',
+        business_type: currentBusiness
+      },
+      {
+        id: 'green-tea',
+        name: 'Green Tea',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Green Tea',
+        business_type: currentBusiness
+      },
+      {
+        id: 'herbal-tea',
+        name: 'Herbal Tea',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Herbal Tea',
+        business_type: currentBusiness
+      },
+      
+      // Soft Drinks & Juices
+      {
+        id: 'coca-cola',
+        name: 'Coca Cola',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Coca Cola',
+        business_type: currentBusiness
+      },
+      {
+        id: 'orange-juice',
+        name: 'Orange Juice',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Orange Juice',
+        business_type: currentBusiness
+      },
+      {
+        id: 'apple-juice',
+        name: 'Apple Juice',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Apple Juice',
+        business_type: currentBusiness
+      },
+      {
+        id: 'sparkling-water',
+        name: 'Sparkling Water',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Sparkling Water',
+        business_type: currentBusiness
+      },
+      {
+        id: 'still-water',
+        name: 'Still Water',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Still Water',
+        business_type: currentBusiness
+      },
+      
+      // Alcoholic Beverages
+      {
+        id: 'red-wine',
+        name: 'Red Wine',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Red Wine',
+        business_type: currentBusiness
+      },
+      {
+        id: 'white-wine',
+        name: 'White Wine',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/White Wine',
+        business_type: currentBusiness
+      },
+      {
+        id: 'beer',
+        name: 'Beer',
+        parent_id: 'beverages',
+        level: 2,
+        path: 'Restaurant Ingredients/Beverages/Beer',
+        business_type: currentBusiness
+      },
+      
+      // ==============================================
+      // CLEANING & SUPPLIES
+      // ==============================================
+      {
+        id: 'cleaning-supplies',
+        name: 'Cleaning & Supplies',
+        parent_id: 'restaurant-ingredients',
+        level: 1,
+        path: 'Restaurant Ingredients/Cleaning & Supplies',
+        business_type: currentBusiness
+      },
+      
+      // Kitchen Cleaning
+      {
+        id: 'dish-soap',
+        name: 'Dish Soap',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Dish Soap',
+        business_type: currentBusiness
+      },
+      {
+        id: 'all-purpose-cleaner',
+        name: 'All-Purpose Cleaner',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/All-Purpose Cleaner',
+        business_type: currentBusiness
+      },
+      {
+        id: 'sanitizer',
+        name: 'Food Safe Sanitizer',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Food Safe Sanitizer',
+        business_type: currentBusiness
+      },
+      {
+        id: 'paper-towels',
+        name: 'Paper Towels',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Paper Towels',
+        business_type: currentBusiness
+      },
+      {
+        id: 'aluminum-foil',
+        name: 'Aluminum Foil',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Aluminum Foil',
+        business_type: currentBusiness
+      },
+      {
+        id: 'plastic-wrap',
+        name: 'Plastic Wrap',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Plastic Wrap',
+        business_type: currentBusiness
+      },
+      {
+        id: 'trash-bags',
+        name: 'Trash Bags',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Trash Bags',
+        business_type: currentBusiness
+      },
+      {
+        id: 'disposable-gloves',
+        name: 'Disposable Gloves',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Disposable Gloves',
+        business_type: currentBusiness
+      },
+      {
+        id: 'food-containers',
+        name: 'Food Storage Containers',
+        parent_id: 'cleaning-supplies',
+        level: 2,
+        path: 'Restaurant Ingredients/Cleaning & Supplies/Food Storage Containers',
+        business_type: currentBusiness
       }
     ];
 
@@ -1075,10 +1951,10 @@ const Inventory: React.FC = () => {
         categories: defaultCategories,
         currentBusiness: currentBusiness,
         lastSaved: new Date().toISOString(),
-        version: '2.0' // Version to track phone model updates
+        version: '3.0' // Version includes comprehensive phone models + restaurant ingredients
       };
       localStorage.setItem(`categories_${currentBusiness}`, JSON.stringify(dataToSave));
-      console.log('✅ Created default categories (v2.0 - Comprehensive Phone Models)');
+      console.log('✅ Created default categories (v3.0 - Phone Models + Restaurant Ingredients)');
     } catch (err) {
       console.error('Failed to save default categories:', err);
     }
@@ -1094,9 +1970,9 @@ const Inventory: React.FC = () => {
         const categories = data.categories || [];
         const version = data.version || '1.0';
         
-        // Check if we need to update to the new comprehensive phone models
-        if (version !== '2.0') {
-          console.log('🔄 Updating to comprehensive phone models (v2.0)...');
+        // Check if we need to update to the new comprehensive system
+        if (version !== '3.0') {
+          console.log('🔄 Updating to comprehensive system (v3.0 - Phone Models + Restaurant Ingredients)...');
           return createDefaultCategories();
         }
         
@@ -1719,13 +2595,13 @@ const Inventory: React.FC = () => {
                  <button 
                    type="button"
                    onClick={() => {
-                     if (confirm('This will reset all categories to the latest comprehensive phone models. Continue?')) {
+                     if (confirm('This will reset all categories to include comprehensive phone models + restaurant ingredients. Continue?')) {
                        localStorage.removeItem(`categories_${currentBusiness}`);
                        loadData();
                      }
                    }}
                    className="reset-categories-btn"
-                   title="Reset to comprehensive phone models"
+                   title="Reset to comprehensive categories"
                  >
                    <Package size={14} />
                    Reset Categories
@@ -1750,13 +2626,19 @@ const Inventory: React.FC = () => {
                  <span>
                    {categories.length} categories loaded • 
                    {categories.filter(cat => cat.level === 0).length} main • 
-                   {categories.filter(cat => cat.level === 1).length} brands • 
-                   {categories.filter(cat => cat.level === 2).length} phone models
+                   {categories.filter(cat => cat.level === 1).length} subcategories • 
+                   {categories.filter(cat => cat.level === 2).length} items
                  </span>
                  <div className="phone-models-info">
                    <Smartphone size={14} />
                    <span style={{ fontSize: '0.9em', color: '#666' }}>
-                     ✨ Comprehensive phone models: iPhone 6s-16, Galaxy S8-S24, A-series, Note, Z-series
+                     ✨ Phone Models: iPhone 6s-16, Galaxy S8-S24, A-series, Note, Z-series
+                   </span>
+                 </div>
+                 <div className="restaurant-ingredients-info">
+                   <Package size={14} />
+                   <span style={{ fontSize: '0.9em', color: '#666' }}>
+                     🍽️ Restaurant Ingredients: Fruits & Vegetables, Dry Foods, Meats & Seafood, Dairy & Eggs, Beverages, Cleaning
                    </span>
                  </div>
                </div>
@@ -1783,19 +2665,25 @@ const Inventory: React.FC = () => {
                      </select>
                    </div>
                    <div className="form-group">
-                     <label>Brand *</label>
+                     <label>
+                       {formData.category_id === 'restaurant-ingredients' ? 'Category *' : 'Brand *'}
+                     </label>
                      <select
                        value={formData.subcategory_id}
                        onChange={(e) => setFormData({...formData, subcategory_id: e.target.value, phone_model_id: ''})}
                        disabled={!formData.category_id}
                        required
                      >
-                       <option value="">Select Brand</option>
+                       <option value="">
+                         {formData.category_id === 'restaurant-ingredients' ? 'Select Category' : 'Select Brand'}
+                       </option>
                        {getSubcategories(formData.category_id).map(cat => (
                          <option key={cat.id} value={cat.id}>{cat.name}</option>
                        ))}
                        {formData.category_id && getSubcategories(formData.category_id).length === 0 && (
-                         <option disabled>No brands available</option>
+                         <option disabled>
+                           {formData.category_id === 'restaurant-ingredients' ? 'No categories available' : 'No brands available'}
+                         </option>
                        )}
                      </select>
                    </div>
@@ -1803,19 +2691,28 @@ const Inventory: React.FC = () => {
                  
                  <div className="form-row">
                    <div className="form-group">
-                     <label>Phone Model *</label>
+                     <label>
+                       {formData.category_id === 'restaurant-ingredients' ? 'Ingredient *' : 'Phone Model *'}
+                     </label>
                      <select
                        value={formData.phone_model_id}
                        onChange={(e) => setFormData({...formData, phone_model_id: e.target.value})}
                        disabled={!formData.subcategory_id}
                        required
                      >
-                       <option value="">Select Phone Model</option>
+                       <option value="">
+                         {formData.category_id === 'restaurant-ingredients' ? 'Select Ingredient' : 'Select Phone Model'}
+                       </option>
                        {getPhoneModels(formData.subcategory_id).map(cat => (
                          <option key={cat.id} value={cat.id}>{cat.name}</option>
                        ))}
                        {formData.subcategory_id && getPhoneModels(formData.subcategory_id).length === 0 && (
-                         <option disabled>No phone models available for this brand</option>
+                         <option disabled>
+                           {formData.category_id === 'restaurant-ingredients' 
+                             ? 'No ingredients available for this category' 
+                             : 'No phone models available for this brand'
+                           }
+                         </option>
                        )}
                      </select>
                    </div>
@@ -1832,7 +2729,9 @@ const Inventory: React.FC = () => {
                 
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Brand *</label>
+                    <label>
+                      {formData.category_id === 'restaurant-ingredients' ? 'Supplier/Brand *' : 'Product Brand *'}
+                    </label>
                     <select
                       value={formData.brand}
                       onChange={(e) => {
@@ -1841,10 +2740,17 @@ const Inventory: React.FC = () => {
                       }}
                       required
                     >
-                      <option value="">Select Brand</option>
-                      {brands.map(brand => (
-                        <option key={brand} value={brand}>{brand}</option>
-                      ))}
+                      <option value="">
+                        {formData.category_id === 'restaurant-ingredients' ? 'Select Supplier' : 'Select Brand'}
+                      </option>
+                      {formData.category_id === 'restaurant-ingredients' 
+                        ? restaurantBrands.map(brand => (
+                            <option key={brand} value={brand}>{brand}</option>
+                          ))
+                        : brands.map(brand => (
+                            <option key={brand} value={brand}>{brand}</option>
+                          ))
+                      }
                     </select>
                   </div>
                   <div className="form-group">
@@ -1858,9 +2764,14 @@ const Inventory: React.FC = () => {
                       required
                     >
                       <option value="">Select Type</option>
-                      {glassTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
+                      {formData.category_id === 'restaurant-ingredients' 
+                        ? restaurantTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))
+                        : glassTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))
+                      }
                     </select>
                   </div>
                 </div>
@@ -1870,7 +2781,9 @@ const Inventory: React.FC = () => {
                 <h4>Specifications</h4>
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Thickness</label>
+                    <label>
+                      {formData.category_id === 'restaurant-ingredients' ? 'Unit/Package' : 'Thickness'}
+                    </label>
                     <select
                       value={formData.thickness}
                       onChange={(e) => {
@@ -1878,24 +2791,46 @@ const Inventory: React.FC = () => {
                         setTimeout(generateProductName, 100);
                       }}
                     >
-                      <option value="">Select Thickness</option>
-                      {thicknessOptions.map(thickness => (
-                        <option key={thickness} value={thickness}>{thickness}</option>
-                      ))}
+                      <option value="">
+                        {formData.category_id === 'restaurant-ingredients' ? 'Select Unit' : 'Select Thickness'}
+                      </option>
+                      {formData.category_id === 'restaurant-ingredients' 
+                        ? measurementUnits.map(unit => (
+                            <option key={unit} value={unit}>{unit}</option>
+                          ))
+                        : thicknessOptions.map(thickness => (
+                            <option key={thickness} value={thickness}>{thickness}</option>
+                          ))
+                      }
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label>Glue Option</label>
-                    <div className="checkbox-group">
-                      <input
-                        type="checkbox"
-                        id="has_glue"
-                        checked={formData.has_glue}
-                        onChange={(e) => setFormData({...formData, has_glue: e.target.checked})}
-                      />
-                      <label htmlFor="has_glue">Has Glue (for Samsung)</label>
+                  {formData.category_id !== 'restaurant-ingredients' && (
+                    <div className="form-group">
+                      <label>Glue Option</label>
+                      <div className="checkbox-group">
+                        <input
+                          type="checkbox"
+                          id="has_glue"
+                          checked={formData.has_glue}
+                          onChange={(e) => setFormData({...formData, has_glue: e.target.checked})}
+                        />
+                        <label htmlFor="has_glue">Has Glue (for Samsung)</label>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  {formData.category_id === 'restaurant-ingredients' && (
+                    <div className="form-group">
+                      <label>Expiry/Best By</label>
+                      <input
+                        type="date"
+                        value={formData.specifications?.expiry_date || ''}
+                        onChange={(e) => setFormData({
+                          ...formData, 
+                          specifications: {...formData.specifications, expiry_date: e.target.value}
+                        })}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
