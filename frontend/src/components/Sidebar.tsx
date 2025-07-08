@@ -11,11 +11,13 @@ import {
   Activity,
   Folder,
   Box,
-  ChefHat
+  ChefHat,
+  Brain
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
+  { name: 'AI Assistant', href: '/ai-assistant', icon: Brain },
   { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
   { name: 'Restaurant Inventory', href: '/restaurant-inventory', icon: ChefHat },
   { name: 'Inventory', href: '/inventory', icon: Package },
