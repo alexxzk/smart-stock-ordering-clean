@@ -59,6 +59,7 @@ interface ProductFormData {
   name: string;
   category_id: string;
   subcategory_id: string;
+  phone_model_id: string;
   brand: string;
   type: string;
   thickness: string;
@@ -91,6 +92,31 @@ const validateStock = (value: string): boolean => {
   return !isNaN(num) && num >= 0 && Number.isInteger(parseFloat(value));
 };
 
+// Stock level utilities
+const getStockLevel = (stock: number) => {
+  if (stock === 0) return 'out-of-stock';
+  if (stock <= 5) return 'critical';
+  if (stock <= 10) return 'low';
+  if (stock <= 20) return 'medium';
+  return 'good';
+};
+
+const getStockWarning = (stock: number) => {
+  const level = getStockLevel(stock);
+  switch (level) {
+    case 'out-of-stock':
+      return { message: 'Out of Stock', color: '#dc2626', icon: '⚠️' };
+    case 'critical':
+      return { message: `Only ${stock} left!`, color: '#dc2626', icon: '🚨' };
+    case 'low':
+      return { message: `Low Stock (${stock})`, color: '#f59e0b', icon: '⚠️' };
+    case 'medium':
+      return { message: `Medium Stock (${stock})`, color: '#3b82f6', icon: '📦' };
+    default:
+      return { message: `${stock} in stock`, color: '#10b981', icon: '✅' };
+  }
+};
+
 const Inventory: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -116,6 +142,7 @@ const Inventory: React.FC = () => {
     name: '',
     category_id: '',
     subcategory_id: '',
+    phone_model_id: '',
     brand: '',
     type: '',
     thickness: '',
@@ -160,6 +187,7 @@ const Inventory: React.FC = () => {
 
   const createDefaultCategories = (): Category[] => {
     const defaultCategories: Category[] = [
+      // Main Categories
       {
         id: 'tempered-glass',
         name: 'Tempered Glass',
@@ -168,6 +196,15 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       {
+        id: 'phone-cases',
+        name: 'Phone Cases',
+        level: 0,
+        path: 'Phone Cases',
+        business_type: currentBusiness
+      },
+      
+      // Apple Brand
+      {
         id: 'apple',
         name: 'Apple',
         parent_id: 'tempered-glass',
@@ -175,6 +212,122 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Apple',
         business_type: currentBusiness
       },
+      
+      // iPhone Models
+      {
+        id: 'iphone-15-pro-max',
+        name: 'iPhone 15 Pro Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 15 Pro Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-15-pro',
+        name: 'iPhone 15 Pro',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 15 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-15-plus',
+        name: 'iPhone 15 Plus',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 15 Plus',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-15',
+        name: 'iPhone 15',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 15',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-14-pro-max',
+        name: 'iPhone 14 Pro Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 14 Pro Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-14-pro',
+        name: 'iPhone 14 Pro',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 14 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-14-plus',
+        name: 'iPhone 14 Plus',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 14 Plus',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-14',
+        name: 'iPhone 14',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 14',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-13-pro-max',
+        name: 'iPhone 13 Pro Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 13 Pro Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-13-pro',
+        name: 'iPhone 13 Pro',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 13 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-13',
+        name: 'iPhone 13',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 13',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-12-pro-max',
+        name: 'iPhone 12 Pro Max',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 12 Pro Max',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-12-pro',
+        name: 'iPhone 12 Pro',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 12 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'iphone-12',
+        name: 'iPhone 12',
+        parent_id: 'apple',
+        level: 2,
+        path: 'Tempered Glass/Apple/iPhone 12',
+        business_type: currentBusiness
+      },
+      
+      // Samsung Brand
       {
         id: 'samsung',
         name: 'Samsung',
@@ -183,6 +336,106 @@ const Inventory: React.FC = () => {
         path: 'Tempered Glass/Samsung',
         business_type: currentBusiness
       },
+      
+      // Samsung Galaxy Models
+      {
+        id: 'galaxy-s24-ultra',
+        name: 'Galaxy S24 Ultra',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S24 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s24-plus',
+        name: 'Galaxy S24+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S24+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s24',
+        name: 'Galaxy S24',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S24',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s23-ultra',
+        name: 'Galaxy S23 Ultra',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S23 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s23-plus',
+        name: 'Galaxy S23+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S23+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s23',
+        name: 'Galaxy S23',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S23',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s22-ultra',
+        name: 'Galaxy S22 Ultra',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S22 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s22-plus',
+        name: 'Galaxy S22+',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S22+',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-s22',
+        name: 'Galaxy S22',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy S22',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-note-20-ultra',
+        name: 'Galaxy Note 20 Ultra',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Note 20 Ultra',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-fold-5',
+        name: 'Galaxy Z Fold 5',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Fold 5',
+        business_type: currentBusiness
+      },
+      {
+        id: 'galaxy-z-flip-5',
+        name: 'Galaxy Z Flip 5',
+        parent_id: 'samsung',
+        level: 2,
+        path: 'Tempered Glass/Samsung/Galaxy Z Flip 5',
+        business_type: currentBusiness
+      },
+      
+      // Google Pixel
       {
         id: 'google-pixel',
         name: 'Google Pixel',
@@ -192,10 +445,35 @@ const Inventory: React.FC = () => {
         business_type: currentBusiness
       },
       {
-        id: 'phone-cases',
-        name: 'Phone Cases',
-        level: 0,
-        path: 'Phone Cases',
+        id: 'pixel-8-pro',
+        name: 'Pixel 8 Pro',
+        parent_id: 'google-pixel',
+        level: 2,
+        path: 'Tempered Glass/Google Pixel/Pixel 8 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pixel-8',
+        name: 'Pixel 8',
+        parent_id: 'google-pixel',
+        level: 2,
+        path: 'Tempered Glass/Google Pixel/Pixel 8',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pixel-7-pro',
+        name: 'Pixel 7 Pro',
+        parent_id: 'google-pixel',
+        level: 2,
+        path: 'Tempered Glass/Google Pixel/Pixel 7 Pro',
+        business_type: currentBusiness
+      },
+      {
+        id: 'pixel-7',
+        name: 'Pixel 7',
+        parent_id: 'google-pixel',
+        level: 2,
+        path: 'Tempered Glass/Google Pixel/Pixel 7',
         business_type: currentBusiness
       }
     ];
@@ -271,8 +549,8 @@ const Inventory: React.FC = () => {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.category_id || !formData.brand || !formData.type) {
-      alert('Please fill in all required fields');
+    if (!formData.name || !formData.category_id || !formData.subcategory_id || !formData.phone_model_id || !formData.brand || !formData.type) {
+      alert('Please fill in all required fields (Category, Brand, Phone Model, Product Brand, and Type)');
       return;
     }
 
@@ -295,14 +573,15 @@ const Inventory: React.FC = () => {
 
     const category = categories.find(cat => cat.id === formData.category_id);
     const subcategory = categories.find(cat => cat.id === formData.subcategory_id);
+    const phoneModel = categories.find(cat => cat.id === formData.phone_model_id);
 
     const newProduct: Product = {
       id: `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: formData.name,
-      category_id: formData.category_id,
-      category_name: category?.name || '',
+      category_id: formData.phone_model_id, // Use phone model as the most specific category
+      category_name: `${subcategory?.name || ''} ${phoneModel?.name || ''}`.trim(),
       subcategory_id: formData.subcategory_id || undefined,
-      subcategory_name: subcategory?.name || '',
+      subcategory_name: phoneModel?.name || '',
       brand: formData.brand,
       type: formData.type,
       thickness: formData.thickness || undefined,
@@ -332,6 +611,7 @@ const Inventory: React.FC = () => {
       name: '',
       category_id: '',
       subcategory_id: '',
+      phone_model_id: '',
       brand: '',
       type: '',
       thickness: '',
@@ -426,6 +706,10 @@ const Inventory: React.FC = () => {
 
   const getSubcategories = (categoryId: string) => {
     return categories.filter(cat => cat.parent_id === categoryId);
+  };
+
+  const getPhoneModels = (brandId: string) => {
+    return categories.filter(cat => cat.parent_id === brandId);
   };
 
   const generateProductName = () => {
@@ -683,6 +967,34 @@ const Inventory: React.FC = () => {
         </div>
       )}
 
+      {/* Stock Warnings Summary */}
+      {products.length > 0 && (
+        <div className="stock-warnings-summary">
+          <h3>
+            <AlertCircle size={18} />
+            Stock Alerts
+          </h3>
+          <div className="warning-stats">
+            <div className="warning-stat critical">
+              <span className="count">{products.filter(p => getStockLevel(formatStock(p.stock_quantity)) === 'critical').length}</span>
+              <span className="label">Critical (≤5)</span>
+            </div>
+            <div className="warning-stat low">
+              <span className="count">{products.filter(p => getStockLevel(formatStock(p.stock_quantity)) === 'low').length}</span>
+              <span className="label">Low (≤10)</span>
+            </div>
+            <div className="warning-stat out">
+              <span className="count">{products.filter(p => getStockLevel(formatStock(p.stock_quantity)) === 'out-of-stock').length}</span>
+              <span className="label">Out of Stock</span>
+            </div>
+            <div className="warning-stat good">
+              <span className="count">{products.filter(p => getStockLevel(formatStock(p.stock_quantity)) === 'good').length}</span>
+              <span className="label">Well Stocked</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Products Display */}
       <div className="products-section">
         {Object.keys(groupedProducts).length === 0 ? (
@@ -762,9 +1074,14 @@ const Inventory: React.FC = () => {
                            <DollarSign size={16} />
                            <span>${formatPrice(product.price)}</span>
                          </div>
-                         <div className="product-stock">
-                           <Package size={16} />
-                           <span>{formatStock(product.stock_quantity)} in stock</span>
+                         <div className="product-stock-container">
+                           <div 
+                             className={`product-stock stock-${getStockLevel(formatStock(product.stock_quantity))}`}
+                             style={{ color: getStockWarning(formatStock(product.stock_quantity)).color }}
+                           >
+                             <span className="stock-icon">{getStockWarning(formatStock(product.stock_quantity)).icon}</span>
+                             <span>{getStockWarning(formatStock(product.stock_quantity)).message}</span>
+                           </div>
                          </div>
                        </div>
                     
@@ -815,7 +1132,12 @@ const Inventory: React.FC = () => {
              {categories.length > 0 && (
                <div className="category-info">
                  <Package size={16} />
-                 <span>{categories.length} categories loaded • {categories.filter(cat => cat.level === 0).length} main categories</span>
+                 <span>
+                   {categories.length} categories loaded • 
+                   {categories.filter(cat => cat.level === 0).length} main • 
+                   {categories.filter(cat => cat.level === 1).length} brands • 
+                   {categories.filter(cat => cat.level === 2).length} phone models
+                 </span>
                </div>
              )}
             
@@ -827,7 +1149,7 @@ const Inventory: React.FC = () => {
                      <label>Category *</label>
                      <select
                        value={formData.category_id}
-                       onChange={(e) => setFormData({...formData, category_id: e.target.value, subcategory_id: ''})}
+                       onChange={(e) => setFormData({...formData, category_id: e.target.value, subcategory_id: '', phone_model_id: ''})}
                        required
                      >
                        <option value="">Select Category</option>
@@ -840,20 +1162,50 @@ const Inventory: React.FC = () => {
                      </select>
                    </div>
                    <div className="form-group">
-                     <label>Subcategory</label>
+                     <label>Brand *</label>
                      <select
                        value={formData.subcategory_id}
-                       onChange={(e) => setFormData({...formData, subcategory_id: e.target.value})}
+                       onChange={(e) => setFormData({...formData, subcategory_id: e.target.value, phone_model_id: ''})}
                        disabled={!formData.category_id}
+                       required
                      >
-                       <option value="">Select Subcategory</option>
+                       <option value="">Select Brand</option>
                        {getSubcategories(formData.category_id).map(cat => (
                          <option key={cat.id} value={cat.id}>{cat.name}</option>
                        ))}
                        {formData.category_id && getSubcategories(formData.category_id).length === 0 && (
-                         <option disabled>No subcategories available</option>
+                         <option disabled>No brands available</option>
                        )}
                      </select>
+                   </div>
+                 </div>
+                 
+                 <div className="form-row">
+                   <div className="form-group">
+                     <label>Phone Model *</label>
+                     <select
+                       value={formData.phone_model_id}
+                       onChange={(e) => setFormData({...formData, phone_model_id: e.target.value})}
+                       disabled={!formData.subcategory_id}
+                       required
+                     >
+                       <option value="">Select Phone Model</option>
+                       {getPhoneModels(formData.subcategory_id).map(cat => (
+                         <option key={cat.id} value={cat.id}>{cat.name}</option>
+                       ))}
+                       {formData.subcategory_id && getPhoneModels(formData.subcategory_id).length === 0 && (
+                         <option disabled>No phone models available for this brand</option>
+                       )}
+                     </select>
+                   </div>
+                   <div className="form-group">
+                     <label>Quick Stock Check</label>
+                     <div className="stock-level-indicator">
+                       <div className={`stock-level stock-${getStockLevel(formData.stock_quantity)}`}>
+                         <span className="stock-icon">{getStockWarning(formData.stock_quantity).icon}</span>
+                         <span>{getStockWarning(formData.stock_quantity).message}</span>
+                       </div>
+                     </div>
                    </div>
                  </div>
                 
@@ -1018,7 +1370,7 @@ const Inventory: React.FC = () => {
                  <button 
                    type="submit" 
                    className="btn-primary"
-                   disabled={!formData.category_id || categories.length === 0}
+                   disabled={!formData.category_id || !formData.subcategory_id || !formData.phone_model_id || categories.length === 0}
                  >
                    Add Product
                  </button>
