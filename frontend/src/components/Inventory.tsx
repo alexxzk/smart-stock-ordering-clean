@@ -571,7 +571,6 @@ const Inventory: React.FC = () => {
     const price = parseFloat(priceStr);
     const stockQuantity = parseInt(stockStr);
 
-    const category = categories.find(cat => cat.id === formData.category_id);
     const subcategory = categories.find(cat => cat.id === formData.subcategory_id);
     const phoneModel = categories.find(cat => cat.id === formData.phone_model_id);
 
