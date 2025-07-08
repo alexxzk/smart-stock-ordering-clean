@@ -10,12 +10,14 @@ import {
   Link,
   Activity,
   Folder,
-  Box
+  Box,
+  ChefHat
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
   { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
+  { name: 'Restaurant Inventory', href: '/restaurant-inventory', icon: ChefHat },
   { name: 'Inventory', href: '/inventory', icon: Package },
   { name: 'Products', href: '/products', icon: Box },
   { name: 'Categories', href: '/categories', icon: Folder },

@@ -12,6 +12,7 @@ import POSIntegrations from './pages/POSIntegrations'
 import Orders from './pages/Orders'
 import Categories from './components/Categories'
 import ProductsPage from './pages/InventoryPage'
+import RestaurantInventory from './components/RestaurantInventory'
 import Login from './pages/Login'
 import TestPage from './pages/TestPage'
 import DebugTest from './pages/DebugTest'
@@ -35,6 +36,7 @@ function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path="forecasting" element={<Forecasting />} />
+            <Route path="restaurant-inventory" element={<RestaurantInventory />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="categories" element={<Categories />} />
