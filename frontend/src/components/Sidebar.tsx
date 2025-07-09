@@ -13,12 +13,14 @@ import {
   Box,
   ChefHat,
   Brain,
-  Database
+  Database,
+  BookOpen
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
   { name: 'AI Assistant', href: '/ai-assistant', icon: Brain },
+  { name: 'Menu Management', href: '/menu-management', icon: BookOpen },
   { name: 'Menu Data Import', href: '/menu-importer', icon: Database },
   { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
   { name: 'Restaurant Inventory', href: '/restaurant-inventory', icon: ChefHat },

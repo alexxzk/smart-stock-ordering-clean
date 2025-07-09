@@ -15,6 +15,7 @@ import ProductsPage from './pages/InventoryPage'
 import RestaurantInventory from './components/RestaurantInventory'
 import AIAssistant from './components/AIAssistant'
 import MenuDataImporter from './components/MenuDataImporter'
+import MenuManagement from './components/MenuManagement'
 import Login from './pages/Login'
 import TestPage from './pages/TestPage'
 import DebugTest from './pages/DebugTest'
@@ -49,6 +50,7 @@ function App() {
             <Route path="orders" element={<Orders />} />
             <Route path="ai-assistant" element={<AIAssistant />} />
             <Route path="menu-importer" element={<MenuDataImporter />} />
+            <Route path="menu-management" element={<MenuManagement />} />
           </Route>
         </Routes>
         <PrivacyConsent />
