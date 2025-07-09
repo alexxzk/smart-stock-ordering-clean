@@ -141,6 +141,7 @@
   width: 300px;
   transition: all 0.2s;
   background: #f8fafc;
+  color: #0f172a;
 }
 
 .search-input:focus {
@@ -148,6 +149,10 @@
   border-color: #3b82f6;
   background: white;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
 }
 
 .filter-btn {
@@ -280,6 +285,7 @@
   border-radius: 8px;
   font-size: 14px;
   background: white;
+  color: #0f172a;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -983,6 +989,7 @@
   font-size: 14px;
   transition: all 0.2s;
   background: white;
+  color: #0f172a;
 }
 
 .form-group input:focus,
@@ -991,6 +998,23 @@
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.form-group select option {
+  color: #0f172a;
+  background: white;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #64748b;
+}
+
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
 
 .form-actions {
