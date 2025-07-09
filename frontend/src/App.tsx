@@ -16,6 +16,7 @@ import RestaurantInventory from './components/RestaurantInventory'
 import AIAssistant from './components/AIAssistant'
 import MenuDataImporter from './components/MenuDataImporter'
 import MenuManagement from './components/MenuManagement'
+import RestaurantMenu from './components/RestaurantMenu'
 import Login from './pages/Login'
 import TestPage from './pages/TestPage'
 import DebugTest from './pages/DebugTest'
@@ -51,6 +52,7 @@ function App() {
             <Route path="ai-assistant" element={<AIAssistant />} />
             <Route path="menu-importer" element={<MenuDataImporter />} />
             <Route path="menu-management" element={<MenuManagement />} />
+            <Route path="restaurant-menu" element={<RestaurantMenu />} />
           </Route>
         </Routes>
         <PrivacyConsent />
