@@ -2,16 +2,27 @@ services:
   - type: web
     name: smart-stock-ordering-backend
     env: python
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && python app.py"
     plan: free
-    buildCommand: cd backend && pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
-    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
-    rootDir: .
+    branch: main
     envVars:
-      - key: DEV_MODE
-        value: false
       - key: PYTHON_VERSION
-        value: 3.11
-      - key: PIP_NO_CACHE_DIR
-        value: "1"
-      - key: PIP_DISABLE_PIP_VERSION_CHECK
-        value: "1" 
+        value: 3.11.10
+      - key: PORT
+        value: 10000
+      - key: FLASK_ENV
+        value: production
+  
+  - type: web
+    name: smart-stock-ordering-frontend
+    env: node
+    buildCommand: "cd frontend && npm install && npm run build"
+    startCommand: "cd frontend && npm run preview -- --host 0.0.0.0 --port $PORT"
+    plan: free
+    branch: main
+    envVars:
+      - key: NODE_VERSION
+        value: 18.18.0
+      - key: PORT
+        value: 10000 

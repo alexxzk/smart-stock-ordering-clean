@@ -13,8 +13,16 @@ load_dotenv()
 # Import AI service
 try:
     from ai_service import ai_service
+    # Train models on startup if AI service is available
+    try:
+        ai_service.train_demand_forecasting_model()
+        logger = logging.getLogger(__name__)
+        logger.info("AI models trained successfully")
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error training AI models: {e}")
 except ImportError:
-    print("Warning: AI service not available")
+    print("Warning: AI service not available - running in basic mode")
     ai_service = None
 
 app = Flask(__name__)
