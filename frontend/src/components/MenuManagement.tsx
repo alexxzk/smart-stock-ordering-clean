@@ -1,42 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  BookOpen, 
-  ChefHat, 
-  DollarSign, 
-  Clock, 
+import {
+  ChefHat,
+  DollarSign,
+  Clock,
   Users,
   TrendingUp,
-  Filter,
-  Search,
-  Eye,
-  Download,
-  Upload,
-  BarChart3,
   Leaf,
-  AlertCircle,
-  Star
+  Upload,
+  RefreshCw,
+  Search,
+  BarChart3,
+  X,
+  AlertCircle
 } from 'lucide-react';
 
-interface MenuCategory {
-  id: string;
+// API configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Type definitions
+interface MenuIngredient {
+  ingredient_id: string;
   name: string;
-  description: string;
-  icon: string;
-  recipe_count: number;
+  quantity: number;
+  unit: string;
+  cost_per_unit: number;
+  total_cost: number;
+  category: string;
 }
 
-interface MenuRecipe {
+interface Recipe {
   id: string;
   name: string;
   category: string;
   description: string;
   prep_time_minutes: number;
   cook_time_minutes: number;
+  serving_size: number;
   difficulty: string;
   is_vegetarian: boolean;
   is_vegan: boolean;
   is_gluten_free: boolean;
-  allergens: string;
+  allergens: string[];
   price: number;
   cost_to_make: number;
   profit_margin: number;
@@ -45,573 +49,580 @@ interface MenuRecipe {
   carbs_g: number;
   fat_g: number;
   fiber_g: number;
-  tags: string;
-  ingredients_summary?: string;
+  ingredients?: MenuIngredient[];
+  instructions?: string[];
+  tags: string[];
 }
 
-interface RecipeDetail extends MenuRecipe {
-  ingredients: Array<{
-    ingredient_name: string;
-    quantity: number;
-    unit: string;
-    cost_per_unit: number;
-    total_cost: number;
-    category: string;
-  }>;
-  instructions?: string;
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
 }
 
-interface ProfitabilityData {
-  categories: Array<{
-    category: string;
-    recipe_count: number;
-    avg_price: number;
-    avg_cost: number;
-    avg_profit_margin: number;
-    min_profit_margin: number;
-    max_profit_margin: number;
-  }>;
+interface MenuAnalytics {
+  total_recipes: number;
+  avg_price: number;
+  avg_profit_margin: number;
+  avg_cost: number;
+  total_revenue_potential: number;
+  total_cost: number;
+  categories: Record<string, number>;
+  dietary_distribution: {
+    vegetarian: number;
+    vegan: number;
+    gluten_free: number;
+  };
+  difficulty_distribution: {
+    easy: number;
+    medium: number;
+    hard: number;
+  };
 }
 
 const MenuManagement: React.FC = () => {
-  const [categories, setCategories] = useState<MenuCategory[]>([]);
-  const [recipes, setRecipes] = useState<MenuRecipe[]>([]);
-  const [filteredRecipes, setFilteredRecipes] = useState<MenuRecipe[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedRecipe, setSelectedRecipe] = useState<RecipeDetail | null>(null);
-  const [profitabilityData, setProfitabilityData] = useState<ProfitabilityData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'recipes' | 'analytics' | 'import'>('recipes');
-  const [importStatus, setImportStatus] = useState<string>('');
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [analytics, setAnalytics] = useState<MenuAnalytics>({
+    total_recipes: 0,
+    avg_price: 0,
+    avg_profit_margin: 0,
+    avg_cost: 0,
+    total_revenue_potential: 0,
+    total_cost: 0,
+    categories: {},
+    dietary_distribution: { vegetarian: 0, vegan: 0, gluten_free: 0 },
+    difficulty_distribution: { easy: 0, medium: 0, hard: 0 }
+  });
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
+  const [error, setError] = useState('');
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [activeTab, setActiveTab] = useState('recipes');
 
   useEffect(() => {
-    loadMenuData();
+    fetchMenuData();
   }, []);
 
-  useEffect(() => {
-    filterRecipes();
-  }, [recipes, selectedCategory, searchTerm]);
-
-  const loadMenuData = async () => {
-    setLoading(true);
+  const fetchMenuData = async () => {
     try {
-      // Load categories
-      const categoriesResponse = await fetch('/api/menu/categories');
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        setCategories(categoriesData);
-      }
+      setLoading(true);
+      const [recipesRes, categoriesRes, analyticsRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/menu/recipes`),
+        fetch(`${API_BASE_URL}/api/menu/categories`),
+        fetch(`${API_BASE_URL}/api/menu/analytics`)
+      ]);
 
-      // Load recipes
-      const recipesResponse = await fetch('/api/menu/recipes');
-      if (recipesResponse.ok) {
-        const recipesData = await recipesResponse.json();
-        setRecipes(recipesData);
+      if (recipesRes.ok) {
+        setRecipes(await recipesRes.json());
       }
-
-      // Load profitability data
-      const profitabilityResponse = await fetch('/api/menu/profitability');
-      if (profitabilityResponse.ok) {
-        const profitabilityData = await profitabilityResponse.json();
-        setProfitabilityData(profitabilityData);
+      if (categoriesRes.ok) {
+        setCategories(await categoriesRes.json());
       }
-
-    } catch (error) {
-      console.error('Error loading menu data:', error);
+      if (analyticsRes.ok) {
+        setAnalytics(await analyticsRes.json());
+      }
+    } catch (err) {
+      setError('Failed to fetch menu data');
+      console.error('Menu data fetch error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const filterRecipes = () => {
-    let filtered = recipes;
-
-    if (selectedCategory) {
-      filtered = filtered.filter(recipe => recipe.category === selectedCategory);
-    }
-
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(recipe => 
-        recipe.name.toLowerCase().includes(term) ||
-        recipe.description.toLowerCase().includes(term) ||
-        recipe.tags.toLowerCase().includes(term)
-      );
-    }
-
-    setFilteredRecipes(filtered);
-  };
-
-  const handleImportDataset = async () => {
-    setLoading(true);
-    setImportStatus('Importing menu dataset...');
-    
+  const importMenuDataset = async () => {
     try {
-      const response = await fetch('/api/menu/import-dataset', {
+      setImporting(true);
+      setError('');
+
+      const response = await fetch(`${API_BASE_URL}/api/menu/import-dataset`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
-      
+
       if (response.ok) {
         const result = await response.json();
-        setImportStatus(`✅ ${result.message}`);
-        await loadMenuData();
+        console.log('Import successful:', result);
+        await fetchMenuData(); // Refresh data
+        setError(''); // Clear any previous errors
       } else {
-        const error = await response.json();
-        setImportStatus(`❌ Import failed: ${error.error}`);
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to import menu dataset');
       }
-    } catch (error) {
-      setImportStatus(`❌ Import failed: ${error}`);
+    } catch (err) {
+      setError('Error importing menu dataset');
+      console.error('Import error:', err);
     } finally {
-      setLoading(false);
+      setImporting(false);
     }
   };
 
-  const viewRecipeDetails = async (recipeId: string) => {
+  const fetchRecipeDetails = async (recipeId: string) => {
     try {
-      const response = await fetch(`/api/menu/recipe/${recipeId}`);
+      const response = await fetch(`${API_BASE_URL}/api/menu/recipe/${recipeId}`);
       if (response.ok) {
-        const recipeDetail = await response.json();
-        setSelectedRecipe(recipeDetail);
+        const recipe = await response.json();
+        setSelectedRecipe(recipe);
       }
-    } catch (error) {
-      console.error('Error loading recipe details:', error);
+    } catch (err) {
+      console.error('Error fetching recipe details:', err);
     }
+  };
+
+  const filteredRecipes = recipes.filter(recipe => {
+    const matchesCategory = selectedCategory === 'all' || recipe.category === selectedCategory;
+    const matchesSearch = recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const getDietaryIcons = (recipe: Recipe) => {
+    const icons = [];
+    if (recipe.is_vegetarian) icons.push(<Leaf key="veg" className="w-4 h-4 text-green-500" />);
+    if (recipe.is_vegan) icons.push(<Leaf key="vegan" className="w-4 h-4 text-green-600" />);
+    if (recipe.is_gluten_free) icons.push(<span key="gf" className="text-xs text-blue-500 font-bold">GF</span>);
+    return icons;
   };
 
   const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty.toLowerCase()) {
-      case 'easy': return 'text-green-600 bg-green-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'hard': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+    switch (difficulty) {
+      case 'easy': return 'bg-green-100 text-green-800 border-green-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'hard': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const getProfitabilityColor = (margin: number) => {
-    if (margin >= 60) return 'text-green-600';
-    if (margin >= 40) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Menu Management</h1>
-        <p className="text-gray-600">Comprehensive menu dataset with recipes, costs, and analytics</p>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
-        {[
-          { id: 'recipes', label: 'Recipes & Menu', icon: BookOpen },
-          { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-          { id: 'import', label: 'Import Data', icon: Upload }
-        ].map(({ id, label, icon: Icon }) => (
+      <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+            <ChefHat className="mr-3 text-blue-600" />
+            Menu Management
+          </h1>
+          <p className="text-gray-600 mt-1">Manage your restaurant menu and recipes</p>
+        </div>
+        <div className="flex gap-2">
           <button
-            key={id}
-            onClick={() => setActiveTab(id as any)}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-              activeTab === id
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
+            onClick={fetchMenuData}
+            disabled={loading}
+            className="flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
           >
-            <Icon className="h-4 w-4 mr-2" />
-            {label}
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
           </button>
-        ))}
+          <button
+            onClick={importMenuDataset}
+            disabled={importing}
+            className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {importing ? 'Importing...' : 'Import Dataset'}
+          </button>
+        </div>
       </div>
 
-      {/* Recipes Tab */}
-      {activeTab === 'recipes' && (
-        <div className="space-y-6">
-          {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm border p-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <input
-                    type="text"
-                    placeholder="Search recipes..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.icon} {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
+          <AlertCircle className="w-5 h-5 text-red-500 mr-3" />
+          <span className="text-red-700">{error}</span>
+          <button 
+            onClick={() => setError('')}
+            className="ml-auto text-red-500 hover:text-red-700"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Analytics Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <ChefHat className="h-8 w-8 text-blue-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Recipes</p>
+              <p className="text-2xl font-bold text-gray-900">{analytics.total_recipes || 0}</p>
             </div>
           </div>
+        </div>
 
-          {/* Categories Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {categories.map(category => (
-              <div key={category.id} className="bg-white rounded-lg shadow-sm border p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-2xl">{category.icon}</span>
-                  <span className="text-sm text-gray-500">{category.recipe_count} recipes</span>
-                </div>
-                <h3 className="font-semibold text-gray-900">{category.name}</h3>
-                <p className="text-sm text-gray-600">{category.description}</p>
-              </div>
-            ))}
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <DollarSign className="h-8 w-8 text-green-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Avg. Price</p>
+              <p className="text-2xl font-bold text-gray-900">${analytics.avg_price?.toFixed(2) || '0.00'}</p>
+            </div>
           </div>
+        </div>
 
-          {/* Recipe Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredRecipes.map(recipe => (
-              <div key={recipe.id} className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
-                <div className="p-4">
-                  {/* Recipe Header */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">{recipe.name}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">{recipe.description}</p>
-                    </div>
-                    <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(recipe.difficulty)}`}>
-                      {recipe.difficulty}
-                    </span>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <TrendingUp className="h-8 w-8 text-purple-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Avg. Profit Margin</p>
+              <p className="text-2xl font-bold text-gray-900">{analytics.avg_profit_margin?.toFixed(1) || '0.0'}%</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <Leaf className="h-8 w-8 text-green-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Vegetarian Options</p>
+              <p className="text-2xl font-bold text-gray-900">{analytics.dietary_distribution?.vegetarian || 0}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="bg-white rounded-lg shadow-sm">
+        {/* Tabs */}
+        <div className="border-b border-gray-200">
+          <nav className="flex space-x-8 px-6">
+            {['recipes', 'categories', 'analytics'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
+                  activeTab === tab
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="p-6">
+          {activeTab === 'recipes' && (
+            <div className="space-y-6">
+              {/* Filters */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search recipes..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
                   </div>
+                </div>
+                <div className="sm:w-48">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-                  {/* Recipe Meta */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {recipe.prep_time_minutes + recipe.cook_time_minutes}min
-                    </div>
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      {recipe.calories} cal
-                    </div>
-                  </div>
-
-                  {/* Dietary Badges */}
-                  <div className="flex gap-1 mb-3">
-                    {recipe.is_vegetarian && (
-                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                        🌱 Vegetarian
-                      </span>
-                    )}
-                    {recipe.is_vegan && (
-                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                        🌿 Vegan
-                      </span>
-                    )}
-                    {recipe.is_gluten_free && (
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                        🌾 Gluten-Free
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Pricing */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-gray-900">
-                        {formatCurrency(recipe.price)}
-                      </span>
-                      <div className="text-sm">
-                        <div className="text-gray-500">Cost: {formatCurrency(recipe.cost_to_make)}</div>
-                        <div className={`font-medium ${getProfitabilityColor(recipe.profit_margin)}`}>
-                          {recipe.profit_margin.toFixed(1)}% profit
-                        </div>
+              {/* Recipes Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredRecipes.map((recipe) => (
+                  <div key={recipe.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900">{recipe.name}</h3>
+                      <div className="flex gap-1">
+                        {getDietaryIcons(recipe)}
                       </div>
                     </div>
+                    
+                    <div className="flex justify-between items-center mb-3">
+                      <span className={`px-2 py-1 text-xs rounded-md border ${getDifficultyColor(recipe.difficulty)}`}>
+                        {recipe.difficulty}
+                      </span>
+                      <span className="text-2xl font-bold text-green-600">
+                        ${recipe.price?.toFixed(2)}
+                      </span>
+                    </div>
+
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {recipe.description}
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {recipe.prep_time_minutes + recipe.cook_time_minutes} min
+                        </div>
+                        <div className="flex items-center">
+                          <Users className="w-4 h-4 mr-1" />
+                          {recipe.serving_size} serving
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between text-sm">
+                        <span>Cost: ${recipe.cost_to_make?.toFixed(2)}</span>
+                        <span className="text-green-600 font-medium">
+                          {recipe.profit_margin?.toFixed(1)}% margin
+                        </span>
+                      </div>
+
+                      <div className="text-xs text-gray-500">
+                        {recipe.calories} cal | {recipe.protein_g}g protein
+                      </div>
+                    </div>
+
                     <button
-                      onClick={() => viewRecipeDetails(recipe.id)}
-                      className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      onClick={() => fetchRecipeDetails(recipe.id)}
+                      className="w-full mt-4 px-4 py-2 text-blue-600 border border-blue-200 rounded-md hover:bg-blue-50"
                     >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
+                      View Details
                     </button>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {filteredRecipes.length === 0 && !loading && (
-            <div className="text-center py-8">
-              <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No recipes found matching your criteria.</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Analytics Tab */}
-      {activeTab === 'analytics' && profitabilityData && (
-        <div className="space-y-6">
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <div className="flex items-center">
-                <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{recipes.length}</p>
-                  <p className="text-sm text-gray-600">Total Recipes</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <div className="flex items-center">
-                <DollarSign className="h-8 w-8 text-green-600 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatCurrency(recipes.reduce((sum, r) => sum + r.price, 0) / recipes.length)}
+              {filteredRecipes.length === 0 && (
+                <div className="text-center py-12">
+                  <ChefHat className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No recipes found</h3>
+                  <p className="text-gray-600">
+                    {recipes.length === 0 
+                      ? "Import the menu dataset to get started" 
+                      : "Try adjusting your search or filter criteria"}
                   </p>
-                  <p className="text-sm text-gray-600">Avg Price</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <div className="flex items-center">
-                <TrendingUp className="h-8 w-8 text-purple-600 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {(recipes.reduce((sum, r) => sum + r.profit_margin, 0) / recipes.length).toFixed(1)}%
-                  </p>
-                  <p className="text-sm text-gray-600">Avg Profit</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <div className="flex items-center">
-                <Leaf className="h-8 w-8 text-green-600 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {recipes.filter(r => r.is_vegetarian).length}
-                  </p>
-                  <p className="text-sm text-gray-600">Vegetarian</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Category Profitability */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">Category Profitability Analysis</h2>
-            </div>
-            <div className="p-4">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-sm font-medium text-gray-500">
-                      <th className="pb-2">Category</th>
-                      <th className="pb-2">Recipes</th>
-                      <th className="pb-2">Avg Price</th>
-                      <th className="pb-2">Avg Cost</th>
-                      <th className="pb-2">Profit Margin</th>
-                      <th className="pb-2">Range</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {profitabilityData.categories.map(category => (
-                      <tr key={category.category} className="border-t">
-                        <td className="py-3 font-medium">{category.category}</td>
-                        <td className="py-3">{category.recipe_count}</td>
-                        <td className="py-3">{formatCurrency(category.avg_price)}</td>
-                        <td className="py-3">{formatCurrency(category.avg_cost)}</td>
-                        <td className={`py-3 font-medium ${getProfitabilityColor(category.avg_profit_margin)}`}>
-                          {category.avg_profit_margin.toFixed(1)}%
-                        </td>
-                        <td className="py-3 text-gray-500">
-                          {category.min_profit_margin.toFixed(1)}% - {category.max_profit_margin.toFixed(1)}%
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Import Tab */}
-      {activeTab === 'import' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Import Menu Dataset</h2>
-            <p className="text-gray-600 mb-6">
-              Import the comprehensive restaurant menu dataset including 45+ recipes, detailed ingredients, 
-              costs, nutritional information, and profitability data.
-            </p>
-            
-            <div className="space-y-4">
-              <button
-                onClick={handleImportDataset}
-                disabled={loading}
-                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-              >
-                <Upload className="h-5 w-5 mr-2" />
-                {loading ? 'Importing...' : 'Import Menu Dataset'}
-              </button>
-              
-              {importStatus && (
-                <div className={`p-4 rounded-lg ${
-                  importStatus.includes('✅') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-                }`}>
-                  {importStatus}
                 </div>
               )}
             </div>
+          )}
 
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Dataset Includes:</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• 45+ complete recipes across 8 categories</li>
-                <li>• Detailed ingredient lists with costs</li>
-                <li>• Nutritional information (calories, macros)</li>
-                <li>• Profitability analysis and pricing data</li>
-                <li>• Dietary filters (vegetarian, vegan, gluten-free)</li>
-                <li>• Preparation times and difficulty levels</li>
-              </ul>
+          {activeTab === 'categories' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {categories.map((category) => (
+                <div key={category.id} className="border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-center mb-3">
+                    <span className="text-2xl mr-3">{category.icon}</span>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                      <p className="text-sm text-gray-600">{category.description}</p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {analytics.categories?.[category.id] || 0} recipes
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
+
+          {activeTab === 'analytics' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Dietary Distribution */}
+              <div className="border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <Leaf className="w-5 h-5 mr-2" />
+                  Dietary Options
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Vegetarian</span>
+                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
+                      {analytics.dietary_distribution?.vegetarian || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Vegan</span>
+                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
+                      {analytics.dietary_distribution?.vegan || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Gluten-Free</span>
+                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
+                      {analytics.dietary_distribution?.gluten_free || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Difficulty Distribution */}
+              <div className="border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <BarChart3 className="w-5 h-5 mr-2" />
+                  Recipe Difficulty
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Easy</span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                      {analytics.difficulty_distribution?.easy || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Medium</span>
+                    <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">
+                      {analytics.difficulty_distribution?.medium || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Hard</span>
+                    <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">
+                      {analytics.difficulty_distribution?.hard || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial Overview */}
+              <div className="lg:col-span-2 border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <DollarSign className="w-5 h-5 mr-2" />
+                  Financial Overview
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Total Revenue Potential</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      ${analytics.total_revenue_potential?.toFixed(2) || '0.00'}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Total Cost</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      ${analytics.total_cost?.toFixed(2) || '0.00'}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Average Cost per Recipe</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      ${analytics.avg_cost?.toFixed(2) || '0.00'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Recipe Detail Modal */}
       {selectedRecipe && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{selectedRecipe.name}</h2>
-                  <p className="text-gray-600 mt-1">{selectedRecipe.description}</p>
+                  <h2 className="text-2xl font-bold">{selectedRecipe.name}</h2>
+                  <p className="text-gray-600">{selectedRecipe.description}</p>
                 </div>
-                <button
+                <button 
                   onClick={() => setSelectedRecipe(null)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  ✕
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Recipe Info */}
                 <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-semibold mb-3">Recipe Details</h3>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <span className="text-gray-500">Prep Time:</span>
-                        <span className="ml-2 font-medium">{selectedRecipe.prep_time_minutes} min</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Cook Time:</span>
-                        <span className="ml-2 font-medium">{selectedRecipe.cook_time_minutes} min</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Difficulty:</span>
-                        <span className={`ml-2 px-2 py-1 rounded text-xs ${getDifficultyColor(selectedRecipe.difficulty)}`}>
-                          {selectedRecipe.difficulty}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Calories:</span>
-                        <span className="ml-2 font-medium">{selectedRecipe.calories}</span>
-                      </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className={`px-2 py-1 text-xs rounded-md border ${getDifficultyColor(selectedRecipe.difficulty)}`}>
+                      {selectedRecipe.difficulty}
+                    </span>
+                    {getDietaryIcons(selectedRecipe).map((icon, i) => (
+                      <span key={i}>{icon}</span>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Prep Time:</span> {selectedRecipe.prep_time_minutes} min
+                    </div>
+                    <div>
+                      <span className="font-medium">Cook Time:</span> {selectedRecipe.cook_time_minutes} min
+                    </div>
+                    <div>
+                      <span className="font-medium">Servings:</span> {selectedRecipe.serving_size}
+                    </div>
+                    <div>
+                      <span className="font-medium">Calories:</span> {selectedRecipe.calories}
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-semibold mb-3">Pricing & Profitability</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Selling Price:</span>
-                        <span className="font-bold text-lg">{formatCurrency(selectedRecipe.price)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Cost to Make:</span>
-                        <span>{formatCurrency(selectedRecipe.cost_to_make)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Profit Margin:</span>
-                        <span className={`font-bold ${getProfitabilityColor(selectedRecipe.profit_margin)}`}>
-                          {selectedRecipe.profit_margin.toFixed(1)}%
-                        </span>
-                      </div>
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="text-sm text-gray-600">Price</p>
+                      <p className="text-lg font-bold text-green-600">${selectedRecipe.price}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Cost to Make</p>
+                      <p className="text-lg font-bold text-red-600">${selectedRecipe.cost_to_make}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-sm text-gray-600">Profit Margin</p>
+                      <p className="text-lg font-bold text-blue-600">{selectedRecipe.profit_margin}%</p>
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-semibold mb-3">Nutrition (per serving)</h3>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Protein:</span>
-                        <span>{selectedRecipe.protein_g}g</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Carbs:</span>
-                        <span>{selectedRecipe.carbs_g}g</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Fat:</span>
-                        <span>{selectedRecipe.fat_g}g</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Fiber:</span>
-                        <span>{selectedRecipe.fiber_g}g</span>
-                      </div>
-                    </div>
+                  {/* Instructions */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Instructions</h3>
+                    <ol className="list-decimal list-inside space-y-1 text-sm">
+                      {selectedRecipe.instructions?.map((instruction, i) => (
+                        <li key={i}>{instruction}</li>
+                      ))}
+                    </ol>
                   </div>
                 </div>
 
                 {/* Ingredients */}
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold mb-3">Ingredients</h3>
-                    <div className="space-y-2">
-                      {selectedRecipe.ingredients?.map((ingredient, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex-1">
-                            <div className="font-medium">{ingredient.ingredient_name}</div>
-                            <div className="text-sm text-gray-500">
-                              {ingredient.quantity} {ingredient.unit} • {ingredient.category}
-                            </div>
-                          </div>
-                          <div className="text-sm font-medium">
-                            {formatCurrency(ingredient.total_cost)}
-                          </div>
+                <div>
+                  <h3 className="font-semibold mb-3">Ingredients</h3>
+                  <div className="space-y-2">
+                    {selectedRecipe.ingredients?.map((ingredient, i) => (
+                      <div key={i} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                        <div>
+                          <span className="font-medium">{ingredient.name}</span>
+                          <p className="text-sm text-gray-600">
+                            {ingredient.quantity} {ingredient.unit}
+                          </p>
                         </div>
-                      ))}
-                    </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium">${ingredient.total_cost.toFixed(2)}</p>
+                          <p className="text-xs text-gray-500">
+                            ${ingredient.cost_per_unit.toFixed(3)}/{ingredient.unit}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6">
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
-              <span>Loading menu data...</span>
             </div>
           </div>
         </div>
