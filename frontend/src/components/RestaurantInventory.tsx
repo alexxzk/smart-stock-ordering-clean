@@ -90,12 +90,17 @@ const RestaurantInventory: React.FC = () => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'inventory' | 'recipes' | 'sales' | 'pos'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'recipes' | 'sales' | 'pos' | 'menu-data'>('inventory');
   
   // UI States
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showRecipeForm, setShowRecipeForm] = useState(false);
+  
+  // Menu Data States
+  const [menuData, setMenuData] = useState<any>(null);
+  const [menuDataLoaded, setMenuDataLoaded] = useState(false);
+  const [menuDataError, setMenuDataError] = useState<string | null>(null);
 
   
   // Search and Filter States
@@ -152,6 +157,7 @@ const RestaurantInventory: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    loadMenuData();
   }, []);
 
   const loadData = async () => {
@@ -173,6 +179,45 @@ const RestaurantInventory: React.FC = () => {
       setError('Failed to load restaurant inventory data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMenuData = async () => {
+    try {
+      setMenuDataError(null);
+      
+      // First, try to import the dataset into the backend
+      try {
+        const importResponse = await fetch('/api/menu/import-dataset', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (importResponse.ok) {
+          const importResult = await importResponse.json();
+          console.log('✅ Menu dataset imported to backend:', importResult);
+        }
+      } catch (importErr) {
+        console.warn('Could not import dataset to backend:', importErr);
+      }
+      
+      // Load the sample menu dataset from local file
+      const response = await fetch('/sample_data/restaurant_menu_dataset.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setMenuData(data);
+      setMenuDataLoaded(true);
+      console.log('✅ Menu data loaded successfully:', data);
+      
+    } catch (err) {
+      console.error('Error loading menu data:', err);
+      setMenuDataError('Failed to load menu data. Please ensure the menu dataset files are in the correct location.');
+      setMenuDataLoaded(false);
     }
   };
 
@@ -451,6 +496,35 @@ const RestaurantInventory: React.FC = () => {
     alert(`✅ Sale processed!\n${quantity}x ${recipe.name}\nTotal: $${(recipe.selling_price * quantity).toFixed(2)}\nIngredients automatically deducted from inventory.`);
   };
 
+  // Import recipe from menu data
+  const importRecipeFromMenuData = (menuRecipe: any) => {
+    const importedRecipe: Recipe = {
+      id: `imported-${menuRecipe.id}-${Date.now()}`,
+      name: menuRecipe.name,
+      description: menuRecipe.description,
+      category: menuRecipe.category.replace('-', ' ').split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+      selling_price: menuRecipe.price,
+      preparation_time: menuRecipe.prep_time_minutes + menuRecipe.cook_time_minutes,
+      serving_size: menuRecipe.serving_size || 1,
+      ingredients: menuRecipe.ingredients?.map((ing: any) => ({
+        ingredient_id: ing.ingredient_id,
+        ingredient_name: ing.name,
+        quantity_needed: ing.quantity,
+        unit: ing.unit,
+        cost: ing.total_cost
+      })) || [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_active: true
+    };
+
+    const updatedRecipes = [...recipes, importedRecipe];
+    setRecipes(updatedRecipes);
+    saveRecipesToStorage(updatedRecipes);
+    
+    alert(`✅ Recipe "${importedRecipe.name}" imported successfully!`);
+  };
+
   // Create sample data for demonstration
   const createSampleData = () => {
     // Sample ingredients
@@ -692,6 +766,13 @@ const RestaurantInventory: React.FC = () => {
         >
           <BarChart3 size={16} />
           Analytics
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'menu-data' ? 'active' : ''}`}
+          onClick={() => setActiveTab('menu-data')}
+        >
+          <ChefHat size={16} />
+          Menu Data
         </button>
       </div>
 
@@ -1042,6 +1123,216 @@ const RestaurantInventory: React.FC = () => {
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Menu Data Tab */}
+      {activeTab === 'menu-data' && (
+        <div className="menu-data-content">
+          <div className="menu-data-header">
+            <h2>Restaurant Menu Dataset</h2>
+            <div className="menu-data-actions">
+              <button 
+                className="btn btn-secondary"
+                onClick={loadMenuData}
+              >
+                <RefreshCw size={16} />
+                Reload Data
+              </button>
+            </div>
+          </div>
+
+          {menuDataError && (
+            <div className="error-message">
+              <AlertCircle size={16} />
+              <div>
+                <p><strong>Error loading menu data:</strong></p>
+                <p>{menuDataError}</p>
+                <p>Please ensure the files are in the <code>public/sample_data/</code> directory:</p>
+                <ul>
+                  <li>restaurant_menu_dataset.json</li>
+                  <li>restaurant_menu_dataset.csv</li>
+                  <li>menu_data_processor.py</li>
+                  <li>RESTAURANT_MENU_README.md</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {menuDataLoaded && menuData && (
+            <div className="menu-data-display">
+              <div className="menu-data-stats">
+                <div className="stat-card">
+                  <h3>Total Recipes</h3>
+                  <div className="stat-value">{menuData.recipes?.length || 0}</div>
+                </div>
+                <div className="stat-card">
+                  <h3>Categories</h3>
+                  <div className="stat-value">{menuData.categories?.length || 0}</div>
+                </div>
+                <div className="stat-card">
+                  <h3>Avg Profit Margin</h3>
+                  <div className="stat-value">{menuData.cost_analysis?.average_profit_margin?.toFixed(1) || 0}%</div>
+                </div>
+                <div className="stat-card">
+                  <h3>Price Range</h3>
+                  <div className="stat-value">
+                    ${menuData.cost_analysis?.lowest_cost_to_make?.cost?.toFixed(2) || 0} - 
+                    ${menuData.cost_analysis?.most_expensive?.price?.toFixed(2) || 0}
+                  </div>
+                </div>
+              </div>
+
+              <div className="menu-categories">
+                <h3>Menu Categories</h3>
+                <div className="categories-grid">
+                  {menuData.categories?.map((category: any) => (
+                    <div key={category.id} className="category-card">
+                      <div className="category-icon">{category.icon}</div>
+                      <div className="category-info">
+                        <h4>{category.name}</h4>
+                        <p>{category.description}</p>
+                        <span className="recipe-count">
+                          {menuData.recipes?.filter((r: any) => r.category === category.id).length || 0} recipes
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="menu-recipes">
+                <h3>Available Recipes</h3>
+                <div className="recipes-grid">
+                  {menuData.recipes?.map((recipe: any) => (
+                    <div key={recipe.id} className="menu-recipe-card">
+                      <div className="recipe-header">
+                        <h4>{recipe.name}</h4>
+                        <div className="recipe-badges">
+                          {recipe.is_vegetarian && <span className="badge vegetarian">🌱 Vegetarian</span>}
+                          {recipe.is_vegan && <span className="badge vegan">🌿 Vegan</span>}
+                          {recipe.is_gluten_free && <span className="badge gluten-free">🌾 Gluten-Free</span>}
+                        </div>
+                      </div>
+                      
+                      <div className="recipe-content">
+                        <p className="recipe-description">{recipe.description}</p>
+                        
+                        <div className="recipe-details">
+                          <div className="detail-item">
+                            <Clock size={14} />
+                            <span>{recipe.prep_time_minutes + recipe.cook_time_minutes} min</span>
+                          </div>
+                          <div className="detail-item">
+                            <DollarSign size={14} />
+                            <span>${recipe.price}</span>
+                          </div>
+                          <div className="detail-item">
+                            <Tag size={14} />
+                            <span>{recipe.difficulty}</span>
+                          </div>
+                        </div>
+
+                        <div className="recipe-nutrition">
+                          <div className="nutrition-item">
+                            <span className="label">Calories:</span>
+                            <span className="value">{recipe.calories}</span>
+                          </div>
+                          <div className="nutrition-item">
+                            <span className="label">Protein:</span>
+                            <span className="value">{recipe.protein_g}g</span>
+                          </div>
+                          <div className="nutrition-item">
+                            <span className="label">Profit Margin:</span>
+                            <span className="value">{recipe.profit_margin}%</span>
+                          </div>
+                        </div>
+
+                        <div className="recipe-cost-analysis">
+                          <div className="cost-item">
+                            <span className="label">Food Cost:</span>
+                            <span className="value">${recipe.cost_to_make}</span>
+                          </div>
+                          <div className="cost-item">
+                            <span className="label">Selling Price:</span>
+                            <span className="value">${recipe.price}</span>
+                          </div>
+                          <div className="cost-item profit">
+                            <span className="label">Profit:</span>
+                            <span className="value">${(recipe.price - recipe.cost_to_make).toFixed(2)}</span>
+                          </div>
+                        </div>
+
+                        {recipe.ingredients && recipe.ingredients.length > 0 && (
+                          <div className="recipe-ingredients-preview">
+                            <h5>Ingredients ({recipe.ingredients.length}):</h5>
+                            <div className="ingredients-list">
+                              {recipe.ingredients.slice(0, 4).map((ing: any, idx: number) => (
+                                <div key={idx} className="ingredient-item">
+                                  <span className="ingredient-name">{ing.name}</span>
+                                  <span className="ingredient-amount">{ing.quantity}{ing.unit}</span>
+                                </div>
+                              ))}
+                              {recipe.ingredients.length > 4 && (
+                                <div className="ingredient-item">
+                                  <span className="ingredient-name">+{recipe.ingredients.length - 4} more...</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="recipe-tags">
+                          {recipe.tags?.map((tag: string) => (
+                            <span key={tag} className="tag">{tag}</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="recipe-actions">
+                        <button 
+                          className="btn btn-primary"
+                          onClick={() => importRecipeFromMenuData(recipe)}
+                        >
+                          <Plus size={14} />
+                          Import Recipe
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="menu-data-info">
+                <h3>Dataset Information</h3>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <h4>Version</h4>
+                    <p>{menuData.metadata?.version || '1.0'}</p>
+                  </div>
+                  <div className="info-item">
+                    <h4>Last Updated</h4>
+                    <p>{menuData.metadata?.last_updated || 'Unknown'}</p>
+                  </div>
+                  <div className="info-item">
+                    <h4>Description</h4>
+                    <p>{menuData.metadata?.description || 'Restaurant menu dataset'}</p>
+                  </div>
+                  <div className="info-item">
+                    <h4>Usage</h4>
+                    <p>Import recipes to add them to your restaurant inventory system</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!menuDataLoaded && !menuDataError && (
+            <div className="loading-state">
+              <RefreshCw size={48} className="spinning" />
+              <p>Loading menu data...</p>
+            </div>
+          )}
         </div>
       )}
 

@@ -14,6 +14,7 @@ import Categories from './components/Categories'
 import ProductsPage from './pages/InventoryPage'
 import RestaurantInventory from './components/RestaurantInventory'
 import AIAssistant from './components/AIAssistant'
+import MenuDataImporter from './components/MenuDataImporter'
 import Login from './pages/Login'
 import TestPage from './pages/TestPage'
 import DebugTest from './pages/DebugTest'
@@ -47,6 +48,7 @@ function App() {
             <Route path="pos-integrations" element={<POSIntegrations />} />
             <Route path="orders" element={<Orders />} />
             <Route path="ai-assistant" element={<AIAssistant />} />
+            <Route path="menu-importer" element={<MenuDataImporter />} />
           </Route>
         </Routes>
         <PrivacyConsent />

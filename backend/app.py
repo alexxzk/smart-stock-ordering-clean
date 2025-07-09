@@ -10,7 +10,7 @@ import logging
 # Load environment variables
 load_dotenv()
 
-# Import AI service
+# Import services
 try:
     from ai_service import ai_service
     # Train models on startup if AI service is available
@@ -24,6 +24,17 @@ try:
 except ImportError:
     print("Warning: AI service not available - running in basic mode")
     ai_service = None
+
+try:
+    from menu_data_processor import MenuDataProcessor
+    menu_processor = MenuDataProcessor()
+    print("Menu data processor initialized")
+except ImportError:
+    print("Warning: Menu data processor not available")
+    menu_processor = None
+except Exception as e:
+    print(f"Error initializing menu processor: {e}")
+    menu_processor = None
 
 app = Flask(__name__)
 CORS(app)
@@ -283,6 +294,107 @@ def get_categories():
     except Exception as e:
         logger.error(f"Get categories error: {e}")
         return jsonify({'error': 'Internal server error'}), 500
+
+# Menu Data Routes
+@app.route('/api/menu/import-dataset', methods=['POST'])
+def import_menu_dataset():
+    """Import menu dataset from provided files"""
+    if not menu_processor:
+        return jsonify({'error': 'Menu processor not available'}), 503
+    
+    try:
+        # Import from sample data files
+        json_file = os.path.join('sample_data', 'restaurant_menu_dataset.json')
+        csv_file = os.path.join('sample_data', 'restaurant_menu_dataset.csv')
+        
+        results = {}
+        
+        # Import JSON data
+        json_file = '../sample_data/restaurant_menu_dataset.json'
+        success = menu_processor.import_menu_data(json_file)
+        results['import_success'] = success
+        
+        if not results:
+            return jsonify({'error': 'Menu dataset files not found'}), 404
+        
+        return jsonify({
+            'message': 'Menu dataset imported successfully',
+            'results': results,
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    except Exception as e:
+        logger.error(f"Menu import error: {e}")
+        return jsonify({'error': f'Failed to import menu dataset: {str(e)}'}), 500
+
+@app.route('/api/menu/categories', methods=['GET'])
+def get_menu_categories():
+    """Get all menu categories"""
+    if not menu_processor:
+        return jsonify({'error': 'Menu processor not available'}), 503
+    
+    try:
+        categories = menu_processor.get_all_categories()
+        return jsonify(categories)
+    
+    except Exception as e:
+        logger.error(f"Get menu categories error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/menu/recipes', methods=['GET'])
+def get_menu_recipes():
+    """Get all recipes, optionally filtered by category"""
+    if not menu_processor:
+        return jsonify({'error': 'Menu processor not available'}), 503
+    
+    try:
+        category = request.args.get('category')
+        search_term = request.args.get('search')
+        
+        if category:
+            recipes = menu_processor.get_recipes_by_category(category)
+        else:
+            recipes = menu_processor.get_all_recipes()
+        
+        return jsonify(recipes)
+    
+    except Exception as e:
+        logger.error(f"Get menu recipes error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/menu/recipe/<recipe_id>', methods=['GET'])
+def get_menu_recipe_details(recipe_id):
+    """Get detailed recipe information including ingredients"""
+    if not menu_processor:
+        return jsonify({'error': 'Menu processor not available'}), 503
+    
+    try:
+        recipe = menu_processor.get_recipe_by_id(recipe_id)
+        
+        if not recipe:
+            return jsonify({'error': 'Recipe not found'}), 404
+        
+        return jsonify(recipe)
+    
+    except Exception as e:
+        logger.error(f"Get recipe details error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/menu/analytics', methods=['GET'])
+def get_menu_analytics():
+    """Get menu analytics and statistics"""
+    if not menu_processor:
+        return jsonify({'error': 'Menu processor not available'}), 503
+    
+    try:
+        analytics = menu_processor.get_menu_analytics()
+        return jsonify(analytics)
+    
+    except Exception as e:
+        logger.error(f"Get menu analytics error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+
 
 if __name__ == '__main__':
     # Run the app
