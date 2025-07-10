@@ -25,6 +25,7 @@ const navigation = [
   { name: 'Products', href: '/products', icon: ShoppingBag },
   { name: 'Categories', href: '/categories', icon: Tag },
   { name: 'Suppliers', href: '/suppliers', icon: Building },
+  { name: 'Supplier Ordering', href: '/supplier-ordering', icon: ShoppingCart },
   { name: 'Integrations', href: '/integrations', icon: Zap },
   { name: 'Supplier Integrations', href: '/supplier-integrations', icon: Link2 },
   { name: 'POS Analytics', href: '/pos-analytics', icon: CreditCard },
