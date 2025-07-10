@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Upload, FileText, AlertCircle, CheckCircle, Loader, Database } from 'lucide-react'
+import { Upload, AlertCircle, CheckCircle, Loader, Database } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { addInventoryItem, InventoryItem } from '../services/firebaseService'
 
@@ -77,7 +77,7 @@ export default function InventoryImport({ onImportComplete, onError }: Inventory
       
       const data = lines.slice(1)
         .filter(line => line.trim())
-        .map((line, index) => {
+        .map((line) => {
           const values = line.split(',').map(v => v.trim().replace(/"/g, ''))
           const row: any = {}
           
@@ -95,9 +95,6 @@ export default function InventoryImport({ onImportComplete, onError }: Inventory
       const validRecords = data.filter(row => {
         const name = row.name || row.Name || row.NAME
         const category = row.category || row.Category || row.CATEGORY
-        const currentStock = parseFloat(row.currentStock || row.CurrentStock || row.CURRENTSTOCK || '0') || 0
-        const minStock = parseFloat(row.minStock || row.MinStock || row.MINSTOCK || '0') || 0
-        const maxStock = parseFloat(row.maxStock || row.MaxStock || row.MAXSTOCK || '0') || 0
         const unit = row.unit || row.Unit || row.UNIT
         const costPerUnit = parseFloat(row.costPerUnit || row.CostPerUnit || row.COSTPERUNIT || '0') || 0
         

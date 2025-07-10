@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Upload, FileText, AlertCircle, CheckCircle, Loader, Database, FileSpreadsheet } from 'lucide-react'
+import { Upload, FileText, AlertCircle, CheckCircle, Loader } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useAppState } from '../contexts/AppStateContext'
 import { ApiService } from '../services/apiService'
@@ -82,11 +82,11 @@ export default function CSVUpload({ onDataProcessed, onError }: CSVUploadProps) 
       
       const data = lines.slice(1)
         .filter(line => line.trim())
-        .map((line, index) => {
-          const values = line.split(',').map(v => v.trim().replace(/"/g, ''))
+        .map((line) => {
+          const values = line.split(',').map((v: string) => v.trim().replace(/"/g, ''))
           const row: any = {}
           
-          headers.forEach((header, i) => {
+          headers.forEach((header: string, i: number) => {
             row[header] = values[i] || ''
           })
           
@@ -194,13 +194,7 @@ export default function CSVUpload({ onDataProcessed, onError }: CSVUploadProps) 
     }
   }
 
-  const getStepIconForName = (name: string) => {
-    if (name.includes('Reading') || name.includes('File')) return <FileSpreadsheet className="h-4 w-4" />
-    if (name.includes('Parsing') || name.includes('Data')) return <FileText className="h-4 w-4" />
-    if (name.includes('Validating')) return <CheckCircle className="h-4 w-4" />
-    if (name.includes('Saving') || name.includes('Firebase')) return <Database className="h-4 w-4" />
-    return <div className="h-4 w-4" />
-  }
+
 
   return (
     <div className="space-y-6">

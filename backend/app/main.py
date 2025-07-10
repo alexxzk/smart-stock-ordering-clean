@@ -23,9 +23,16 @@ from app.api import excel_processor as excel_router
 from app.api import suppliers as suppliers_router
 from app.api import supplier_integrations as supplier_integrations_router
 from app.api import users as users_router
+from app.api import categories as categories_router
 from app.routes import integrations as integrations_router
 from app.firebase_init import get_firestore_client
 from app.api.cache import router as cache_router
+
+# Import POS integrations (optional)
+try:
+    from app.api import pos_integrations as pos_integrations_router
+except ImportError:
+    pos_integrations_router = None
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -152,6 +159,12 @@ app.include_router(
     dependencies=[Depends(verify_token)]
 )
 app.include_router(
+    categories_router.router, 
+    prefix="/api", 
+    tags=["Categories"],
+    dependencies=[Depends(verify_token)]
+)
+app.include_router(
     integrations_router.router, 
     prefix="/api/integrations", 
     tags=["Integrations"],
@@ -163,6 +176,15 @@ app.include_router(
     tags=["Cache Management"],
     dependencies=[Depends(verify_token)]
 )
+
+# Include POS integrations router if available
+if pos_integrations_router:
+    app.include_router(
+        pos_integrations_router.router,
+        prefix="/api/pos-integrations", 
+        tags=["POS Integrations"],
+        dependencies=[Depends(verify_token)]
+    )
 
 @app.get("/")
 async def root():

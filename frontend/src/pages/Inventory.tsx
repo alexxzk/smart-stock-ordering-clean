@@ -161,7 +161,7 @@ export default function Inventory() {
   const totalValue = inventory.reduce((sum, item) => sum + (item.currentStock * item.costPerUnit), 0)
   const lowStockItems = inventory.filter(item => item.currentStock <= item.minStock).length
 
-  const handleImportComplete = (count: number) => {
+  const handleImportComplete = () => {
     loadInventory() // Reload inventory after import
   }
 

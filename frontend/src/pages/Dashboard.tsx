@@ -3,10 +3,8 @@ import {
   Package, 
   TrendingUp, 
   Building, 
-  AlertTriangle, 
   DollarSign,
   BarChart3,
-  Calendar,
   ShoppingCart,
   FileText
 } from 'lucide-react'

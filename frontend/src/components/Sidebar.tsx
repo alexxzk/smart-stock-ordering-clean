@@ -6,15 +6,31 @@ import {
   ShoppingCart,
   Coffee,
   Building,
-  Zap
+  Zap,
+  Link,
+  Activity,
+  Folder,
+  Box,
+  ChefHat,
+  Brain,
+  Database,
+  BookOpen
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: BarChart3 },
+  { name: 'AI Assistant', href: '/ai-assistant', icon: Brain },
+  { name: 'Menu Management', href: '/menu-management', icon: BookOpen },
+  { name: 'Menu Data Import', href: '/menu-importer', icon: Database },
   { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
+  { name: 'Restaurant Inventory', href: '/restaurant-inventory', icon: ChefHat },
   { name: 'Inventory', href: '/inventory', icon: Package },
+  { name: 'Products', href: '/products', icon: Box },
+  { name: 'Categories', href: '/categories', icon: Folder },
   { name: 'Suppliers', href: '/suppliers', icon: Building },
   { name: 'Integrations', href: '/integrations', icon: Zap },
+  { name: 'Supplier Integrations', href: '/supplier-integrations', icon: Link },
+  { name: 'POS Analytics', href: '/pos-integrations', icon: Activity },
   { name: 'Orders', href: '/orders', icon: ShoppingCart },
 ]
 

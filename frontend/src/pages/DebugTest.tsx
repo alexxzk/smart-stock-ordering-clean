@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../config/firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
 
 const DebugTest = () => {
   const { currentUser } = useAuth();

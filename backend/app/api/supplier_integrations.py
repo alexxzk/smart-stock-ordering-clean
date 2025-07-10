@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import BaseModel
 
 from app.firebase_init import get_firestore_client
@@ -30,6 +30,33 @@ class IntegrationResponse(IntegrationBase):
     created_at: datetime
     updated_at: datetime
     last_sync: Optional[datetime] = None
+
+# New models for supplier operations
+class PricingRequest(BaseModel):
+    supplier_id: str
+    items: List[str]
+
+class PricingData(BaseModel):
+    itemId: str
+    itemName: str
+    price: float
+    currency: str = "USD"
+    unit: str
+    lastUpdated: str
+    supplierId: str
+
+class OrderItem(BaseModel):
+    name: str
+    quantity: float
+    unit: str
+    price: float
+
+class OrderRequest(BaseModel):
+    supplier_id: str
+    items: List[OrderItem]
+    deliveryAddress: str
+    deliveryDate: Optional[str] = None
+    notes: Optional[str] = None
 
 @router.post("/", response_model=IntegrationResponse)
 async def create_integration(
@@ -332,4 +359,157 @@ async def get_integrations_summary(
         raise HTTPException(
             status_code=500,
             detail=f"Error fetching integration summary: {str(e)}"
+        )
+
+# NEW ENDPOINTS FOR FRONTEND FUNCTIONALITY
+
+@router.get("/suppliers")
+async def get_available_suppliers(
+    user: dict = Depends(lambda: {"uid": "test-user"})  # Placeholder for auth
+):
+    """Get list of available suppliers for integration"""
+    try:
+        # Mock supplier data - in real implementation, this would come from a database
+        suppliers = {
+            "sysco": {
+                "id": "sysco",
+                "name": "Sysco Corporation",
+                "integration_type": "api",
+                "api_url": "https://api.sysco.com/v1",
+                "website_url": "https://www.sysco.com",
+                "features": ["Real-time Pricing", "Order Placement", "Delivery Tracking", "Invoice Management"],
+                "description": "Leading food service distributor in North America"
+            },
+            "us_foods": {
+                "id": "us_foods",
+                "name": "US Foods",
+                "integration_type": "api",
+                "api_url": "https://api.usfoods.com/v2",
+                "website_url": "https://www.usfoods.com",
+                "features": ["Real-time Pricing", "Order Placement", "Inventory Sync", "Analytics"],
+                "description": "One of America's largest food service distributors"
+            },
+            "gordon_food": {
+                "id": "gordon_food",
+                "name": "Gordon Food Service",
+                "integration_type": "web_scraping",
+                "website_url": "https://www.gfs.com",
+                "features": ["Price Lookup", "Product Catalog", "Order History"],
+                "description": "Family-owned food service distributor"
+            },
+            "reinhart": {
+                "id": "reinhart",
+                "name": "Reinhart FoodService",
+                "integration_type": "email",
+                "website_url": "https://www.reinhartfoodservice.com",
+                "features": ["Email Orders", "Price Lists", "Product Updates"],
+                "description": "Regional food service distributor"
+            },
+            "performance_food": {
+                "id": "performance_food",
+                "name": "Performance Food Group",
+                "integration_type": "api",
+                "api_url": "https://api.pfgc.com/v1",
+                "website_url": "https://www.pfgc.com",
+                "features": ["Real-time Pricing", "Order Management", "Delivery Scheduling"],
+                "description": "Food distribution company serving restaurants and healthcare"
+            }
+        }
+        
+        return {
+            "success": True,
+            "suppliers": suppliers,
+            "total_count": len(suppliers)
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching suppliers: {str(e)}"
+        )
+
+@router.post("/pricing")
+async def get_pricing(
+    request: PricingRequest,
+    user: dict = Depends(lambda: {"uid": "test-user"})  # Placeholder for auth
+):
+    """Get pricing for items from a specific supplier"""
+    try:
+        # Mock pricing data - in real implementation, this would call supplier APIs
+        pricing_data = []
+        
+        for item in request.items:
+            # Generate mock pricing based on item name
+            base_price = hash(item) % 50 + 10  # Random price between $10-$60
+            
+            pricing_data.append({
+                "itemId": f"{request.supplier_id}_{item.lower().replace(' ', '_')}",
+                "itemName": item.title(),
+                "price": float(base_price + (hash(request.supplier_id) % 10)),
+                "currency": "USD",
+                "unit": "lb" if "meat" in item.lower() or "chicken" in item.lower() else "each",
+                "lastUpdated": datetime.now().isoformat(),
+                "supplierId": request.supplier_id
+            })
+        
+        return {
+            "success": True,
+            "supplier_id": request.supplier_id,
+            "pricing": pricing_data,
+            "fetched_at": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching pricing: {str(e)}"
+        )
+
+@router.post("/order")
+async def place_order(
+    request: OrderRequest,
+    user: dict = Depends(lambda: {"uid": "test-user"})  # Placeholder for auth
+):
+    """Place an order with a supplier"""
+    try:
+        db = get_firestore_client()
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not available")
+        
+        # Calculate total cost
+        total_cost = sum(item.quantity * item.price for item in request.items)
+        
+        # Generate order ID
+        order_id = f"ORD-{datetime.now().strftime('%Y%m%d')}-{hash(str(request.items)) % 10000:04d}"
+        
+        # Save order to database
+        order_data = {
+            "orderId": order_id,
+            "supplierId": request.supplier_id,
+            "userId": user["uid"],
+            "items": [item.dict() for item in request.items],
+            "totalCost": total_cost,
+            "deliveryAddress": request.deliveryAddress,
+            "deliveryDate": request.deliveryDate or (datetime.now().date() + timedelta(days=2)).isoformat(),
+            "notes": request.notes or "",
+            "status": "pending",
+            "orderDate": datetime.now().isoformat(),
+            "estimatedDelivery": (datetime.now().date() + timedelta(days=2)).isoformat()
+        }
+        
+        db.collection("supplier_orders").add(order_data)
+        
+        return {
+            "success": True,
+            "orderId": order_id,
+            "status": "pending",
+            "totalCost": total_cost,
+            "estimatedDelivery": order_data["estimatedDelivery"],
+            "message": f"Order {order_id} placed successfully with {request.supplier_id}"
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error placing order: {str(e)}"
         ) 

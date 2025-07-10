@@ -1,0 +1,1146 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-07-09",
+    "total_recipes": 45,
+    "categories": 8,
+    "description": "Comprehensive restaurant menu dataset with recipes, ingredients, costs, and nutritional information"
+  },
+  "categories": [
+    {
+      "id": "appetizers",
+      "name": "Appetizers",
+      "description": "Starters and small plates",
+      "icon": "🥗"
+    },
+    {
+      "id": "salads",
+      "name": "Salads",
+      "description": "Fresh garden salads and healthy options",
+      "icon": "🥬"
+    },
+    {
+      "id": "soups",
+      "name": "Soups",
+      "description": "Hot and cold soups",
+      "icon": "🍲"
+    },
+    {
+      "id": "main-courses",
+      "name": "Main Courses",
+      "description": "Hearty main dishes and entrees",
+      "icon": "🍽️"
+    },
+    {
+      "id": "pasta",
+      "name": "Pasta & Italian",
+      "description": "Traditional and modern pasta dishes",
+      "icon": "🍝"
+    },
+    {
+      "id": "seafood",
+      "name": "Seafood",
+      "description": "Fresh fish and seafood specialties",
+      "icon": "🐟"
+    },
+    {
+      "id": "desserts",
+      "name": "Desserts",
+      "description": "Sweet treats and desserts",
+      "icon": "🍰"
+    },
+    {
+      "id": "beverages",
+      "name": "Beverages",
+      "description": "Hot and cold drinks",
+      "icon": "🥤"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "schnitzel-meal-001",
+      "name": "Classic Schnitzel Meal",
+      "category": "main-courses",
+      "description": "Traditional breaded schnitzel served with roasted potatoes, steamed vegetables, and house gravy",
+      "prep_time_minutes": 25,
+      "cook_time_minutes": 20,
+      "serving_size": 1,
+      "difficulty": "medium",
+      "is_vegetarian": false,
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "allergens": ["gluten", "eggs"],
+      "price": 18.50,
+      "cost_to_make": 9.25,
+      "profit_margin": 50.0,
+      "calories": 650,
+      "protein_g": 45,
+      "carbs_g": 55,
+      "fat_g": 28,
+      "fiber_g": 8,
+      "ingredients": [
+        {
+          "ingredient_id": "schnitzel-breast",
+          "name": "Chicken Breast (Schnitzel Cut)",
+          "quantity": 200,
+          "unit": "g",
+          "cost_per_unit": 0.025,
+          "total_cost": 5.00,
+          "category": "meats-seafood"
+        },
+        {
+          "ingredient_id": "potatoes-roasted",
+          "name": "Potatoes",
+          "quantity": 200,
+          "unit": "g",
+          "cost_per_unit": 0.003,
+          "total_cost": 0.60,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "mixed-vegetables",
+          "name": "Mixed Vegetables (Peas, Carrots)",
+          "quantity": 100,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.80,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "pumpkin-cubes",
+          "name": "Pumpkin",
+          "quantity": 100,
+          "unit": "g",
+          "cost_per_unit": 0.005,
+          "total_cost": 0.50,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "bread-crumbs",
+          "name": "Bread Crumbs",
+          "quantity": 50,
+          "unit": "g",
+          "cost_per_unit": 0.006,
+          "total_cost": 0.30,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "flour",
+          "name": "All-Purpose Flour",
+          "quantity": 30,
+          "unit": "g",
+          "cost_per_unit": 0.003,
+          "total_cost": 0.09,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "eggs",
+          "name": "Large Eggs",
+          "quantity": 2,
+          "unit": "pieces",
+          "cost_per_unit": 0.35,
+          "total_cost": 0.70,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "vegetable-oil",
+          "name": "Vegetable Oil",
+          "quantity": 50,
+          "unit": "ml",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.20,
+          "category": "oils-fats"
+        },
+        {
+          "ingredient_id": "butter",
+          "name": "Butter",
+          "quantity": 20,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.30,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "salt-pepper",
+          "name": "Salt & Pepper",
+          "quantity": 5,
+          "unit": "g",
+          "cost_per_unit": 0.002,
+          "total_cost": 0.01,
+          "category": "spices-condiments"
+        }
+      ],
+      "instructions": [
+        "Pound chicken breast to even thickness",
+        "Set up breading station: flour, beaten eggs, breadcrumbs",
+        "Season chicken with salt and pepper",
+        "Coat chicken in flour, then egg, then breadcrumbs",
+        "Heat oil in pan and fry schnitzel until golden brown",
+        "Roast potatoes with herbs and butter",
+        "Steam vegetables until tender",
+        "Serve hot with gravy"
+      ],
+      "tags": ["popular", "classic", "comfort-food"]
+    },
+    {
+      "id": "caesar-salad-001",
+      "name": "Caesar Salad",
+      "category": "salads",
+      "description": "Fresh romaine lettuce with classic Caesar dressing, parmesan cheese, and croutons",
+      "prep_time_minutes": 10,
+      "cook_time_minutes": 0,
+      "serving_size": 1,
+      "difficulty": "easy",
+      "is_vegetarian": true,
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "allergens": ["gluten", "dairy", "eggs"],
+      "price": 12.00,
+      "cost_to_make": 4.50,
+      "profit_margin": 62.5,
+      "calories": 320,
+      "protein_g": 12,
+      "carbs_g": 18,
+      "fat_g": 24,
+      "fiber_g": 4,
+      "ingredients": [
+        {
+          "ingredient_id": "romaine-lettuce",
+          "name": "Romaine Lettuce",
+          "quantity": 150,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 1.20,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "parmesan-cheese",
+          "name": "Parmesan Cheese",
+          "quantity": 30,
+          "unit": "g",
+          "cost_per_unit": 0.025,
+          "total_cost": 0.75,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "croutons",
+          "name": "Croutons",
+          "quantity": 40,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.60,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "caesar-dressing",
+          "name": "Caesar Dressing",
+          "quantity": 60,
+          "unit": "ml",
+          "cost_per_unit": 0.020,
+          "total_cost": 1.20,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "lemon",
+          "name": "Fresh Lemon",
+          "quantity": 0.25,
+          "unit": "pieces",
+          "cost_per_unit": 0.50,
+          "total_cost": 0.125,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "black-pepper",
+          "name": "Black Pepper",
+          "quantity": 2,
+          "unit": "g",
+          "cost_per_unit": 0.020,
+          "total_cost": 0.04,
+          "category": "spices-condiments"
+        }
+      ],
+      "instructions": [
+        "Wash and chop romaine lettuce",
+        "Prepare Caesar dressing",
+        "Toss lettuce with dressing",
+        "Add parmesan cheese and croutons",
+        "Finish with fresh black pepper and lemon wedge"
+      ],
+      "tags": ["vegetarian", "fresh", "classic"]
+    },
+    {
+      "id": "pasta-carbonara-001",
+      "name": "Pasta Carbonara",
+      "category": "pasta",
+      "description": "Classic Italian pasta with eggs, cheese, pancetta, and black pepper",
+      "prep_time_minutes": 15,
+      "cook_time_minutes": 15,
+      "serving_size": 1,
+      "difficulty": "medium",
+      "is_vegetarian": false,
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "allergens": ["gluten", "dairy", "eggs"],
+      "price": 16.50,
+      "cost_to_make": 6.75,
+      "profit_margin": 59.1,
+      "calories": 580,
+      "protein_g": 28,
+      "carbs_g": 65,
+      "fat_g": 22,
+      "fiber_g": 3,
+      "ingredients": [
+        {
+          "ingredient_id": "spaghetti",
+          "name": "Spaghetti Pasta",
+          "quantity": 120,
+          "unit": "g",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.48,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "pancetta",
+          "name": "Pancetta",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.035,
+          "total_cost": 2.80,
+          "category": "meats-seafood"
+        },
+        {
+          "ingredient_id": "eggs-large",
+          "name": "Large Eggs",
+          "quantity": 2,
+          "unit": "pieces",
+          "cost_per_unit": 0.35,
+          "total_cost": 0.70,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "pecorino-cheese",
+          "name": "Pecorino Romano Cheese",
+          "quantity": 50,
+          "unit": "g",
+          "cost_per_unit": 0.030,
+          "total_cost": 1.50,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "black-pepper-fresh",
+          "name": "Fresh Black Pepper",
+          "quantity": 3,
+          "unit": "g",
+          "cost_per_unit": 0.025,
+          "total_cost": 0.075,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "garlic",
+          "name": "Fresh Garlic",
+          "quantity": 2,
+          "unit": "cloves",
+          "cost_per_unit": 0.05,
+          "total_cost": 0.10,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "olive-oil-extra-virgin",
+          "name": "Extra Virgin Olive Oil",
+          "quantity": 30,
+          "unit": "ml",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.45,
+          "category": "oils-fats"
+        },
+        {
+          "ingredient_id": "white-wine",
+          "name": "White Wine",
+          "quantity": 50,
+          "unit": "ml",
+          "cost_per_unit": 0.012,
+          "total_cost": 0.60,
+          "category": "beverages"
+        }
+      ],
+      "instructions": [
+        "Cook spaghetti in salted boiling water until al dente",
+        "Render pancetta in a large pan until crispy",
+        "Beat eggs with grated cheese and black pepper",
+        "Drain pasta, reserving pasta water",
+        "Toss hot pasta with pancetta",
+        "Remove from heat, add egg mixture",
+        "Toss quickly, adding pasta water as needed",
+        "Serve immediately with extra cheese and pepper"
+      ],
+      "tags": ["italian", "classic", "comfort-food"]
+    },
+    {
+      "id": "salmon-grilled-001",
+      "name": "Grilled Salmon Fillet",
+      "category": "seafood",
+      "description": "Fresh Atlantic salmon grilled to perfection with herbs and lemon",
+      "prep_time_minutes": 10,
+      "cook_time_minutes": 15,
+      "serving_size": 1,
+      "difficulty": "medium",
+      "is_vegetarian": false,
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "allergens": ["fish"],
+      "price": 22.00,
+      "cost_to_make": 12.50,
+      "profit_margin": 43.2,
+      "calories": 420,
+      "protein_g": 38,
+      "carbs_g": 8,
+      "fat_g": 26,
+      "fiber_g": 2,
+      "ingredients": [
+        {
+          "ingredient_id": "salmon-fillet",
+          "name": "Fresh Salmon Fillet",
+          "quantity": 200,
+          "unit": "g",
+          "cost_per_unit": 0.045,
+          "total_cost": 9.00,
+          "category": "meats-seafood"
+        },
+        {
+          "ingredient_id": "asparagus",
+          "name": "Fresh Asparagus",
+          "quantity": 150,
+          "unit": "g",
+          "cost_per_unit": 0.012,
+          "total_cost": 1.80,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "baby-potatoes",
+          "name": "Baby Potatoes",
+          "quantity": 180,
+          "unit": "g",
+          "cost_per_unit": 0.005,
+          "total_cost": 0.90,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "fresh-dill",
+          "name": "Fresh Dill",
+          "quantity": 10,
+          "unit": "g",
+          "cost_per_unit": 0.020,
+          "total_cost": 0.20,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "lemon-fresh",
+          "name": "Fresh Lemon",
+          "quantity": 0.5,
+          "unit": "pieces",
+          "cost_per_unit": 0.50,
+          "total_cost": 0.25,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "olive-oil",
+          "name": "Olive Oil",
+          "quantity": 20,
+          "unit": "ml",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.30,
+          "category": "oils-fats"
+        },
+        {
+          "ingredient_id": "sea-salt",
+          "name": "Sea Salt",
+          "quantity": 3,
+          "unit": "g",
+          "cost_per_unit": 0.003,
+          "total_cost": 0.009,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "white-pepper",
+          "name": "White Pepper",
+          "quantity": 2,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.03,
+          "category": "spices-condiments"
+        }
+      ],
+      "instructions": [
+        "Season salmon with salt, pepper, and fresh dill",
+        "Brush with olive oil",
+        "Preheat grill to medium-high heat",
+        "Grill salmon 4-5 minutes per side",
+        "Steam asparagus until tender-crisp",
+        "Boil baby potatoes until fork tender",
+        "Serve with lemon wedges and fresh herbs"
+      ],
+      "tags": ["healthy", "gluten-free", "seafood", "premium"]
+    },
+    {
+      "id": "chicken-parmesan-001",
+      "name": "Chicken Parmesan",
+      "category": "main-courses",
+      "description": "Breaded chicken breast topped with marinara sauce and melted mozzarella",
+      "prep_time_minutes": 20,
+      "cook_time_minutes": 25,
+      "serving_size": 1,
+      "difficulty": "medium",
+      "is_vegetarian": false,
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "allergens": ["gluten", "dairy", "eggs"],
+      "price": 19.50,
+      "cost_to_make": 8.75,
+      "profit_margin": 55.1,
+      "calories": 620,
+      "protein_g": 48,
+      "carbs_g": 35,
+      "fat_g": 32,
+      "fiber_g": 4,
+      "ingredients": [
+        {
+          "ingredient_id": "chicken-breast-large",
+          "name": "Chicken Breast",
+          "quantity": 200,
+          "unit": "g",
+          "cost_per_unit": 0.020,
+          "total_cost": 4.00,
+          "category": "meats-seafood"
+        },
+        {
+          "ingredient_id": "spaghetti-side",
+          "name": "Spaghetti",
+          "quantity": 100,
+          "unit": "g",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.40,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "marinara-sauce",
+          "name": "Marinara Sauce",
+          "quantity": 120,
+          "unit": "ml",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.96,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "mozzarella-cheese",
+          "name": "Mozzarella Cheese",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 1.20,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "panko-breadcrumbs",
+          "name": "Panko Breadcrumbs",
+          "quantity": 60,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.48,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "parmesan-grated",
+          "name": "Grated Parmesan",
+          "quantity": 30,
+          "unit": "g",
+          "cost_per_unit": 0.025,
+          "total_cost": 0.75,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "flour-all-purpose",
+          "name": "All-Purpose Flour",
+          "quantity": 40,
+          "unit": "g",
+          "cost_per_unit": 0.003,
+          "total_cost": 0.12,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "eggs-beaten",
+          "name": "Large Eggs",
+          "quantity": 2,
+          "unit": "pieces",
+          "cost_per_unit": 0.35,
+          "total_cost": 0.70,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "vegetable-oil-frying",
+          "name": "Vegetable Oil",
+          "quantity": 100,
+          "unit": "ml",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.40,
+          "category": "oils-fats"
+        }
+      ],
+      "instructions": [
+        "Pound chicken breast to even thickness",
+        "Set up breading station: flour, eggs, panko mixed with parmesan",
+        "Bread chicken thoroughly",
+        "Fry in oil until golden brown",
+        "Top with marinara sauce and mozzarella",
+        "Bake until cheese melts and bubbles",
+        "Cook spaghetti and serve alongside",
+        "Garnish with fresh basil"
+      ],
+      "tags": ["italian-american", "comfort-food", "popular"]
+    },
+    {
+      "id": "vegetable-stir-fry-001",
+      "name": "Asian Vegetable Stir Fry",
+      "category": "main-courses",
+      "description": "Fresh vegetables stir-fried with ginger, garlic, and soy sauce, served over jasmine rice",
+      "prep_time_minutes": 15,
+      "cook_time_minutes": 12,
+      "serving_size": 1,
+      "difficulty": "easy",
+      "is_vegetarian": true,
+      "is_vegan": true,
+      "is_gluten_free": false,
+      "allergens": ["soy"],
+      "price": 14.50,
+      "cost_to_make": 5.25,
+      "profit_margin": 63.8,
+      "calories": 380,
+      "protein_g": 12,
+      "carbs_g": 68,
+      "fat_g": 8,
+      "fiber_g": 8,
+      "ingredients": [
+        {
+          "ingredient_id": "jasmine-rice",
+          "name": "Jasmine Rice",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.005,
+          "total_cost": 0.40,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "broccoli-fresh",
+          "name": "Fresh Broccoli",
+          "quantity": 100,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.80,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "bell-peppers-mixed",
+          "name": "Mixed Bell Peppers",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.012,
+          "total_cost": 0.96,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "carrots-julienne",
+          "name": "Carrots (Julienned)",
+          "quantity": 60,
+          "unit": "g",
+          "cost_per_unit": 0.006,
+          "total_cost": 0.36,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "snow-peas",
+          "name": "Snow Peas",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 1.20,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "mushrooms-shiitake",
+          "name": "Shiitake Mushrooms",
+          "quantity": 60,
+          "unit": "g",
+          "cost_per_unit": 0.020,
+          "total_cost": 1.20,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "ginger-fresh",
+          "name": "Fresh Ginger",
+          "quantity": 15,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.225,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "garlic-fresh",
+          "name": "Fresh Garlic",
+          "quantity": 3,
+          "unit": "cloves",
+          "cost_per_unit": 0.05,
+          "total_cost": 0.15,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "soy-sauce",
+          "name": "Soy Sauce",
+          "quantity": 30,
+          "unit": "ml",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.24,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "sesame-oil",
+          "name": "Sesame Oil",
+          "quantity": 10,
+          "unit": "ml",
+          "cost_per_unit": 0.025,
+          "total_cost": 0.25,
+          "category": "oils-fats"
+        }
+      ],
+      "instructions": [
+        "Cook jasmine rice according to package directions",
+        "Prepare all vegetables by cutting to uniform sizes",
+        "Heat wok or large pan over high heat",
+        "Add oil and aromatics (ginger, garlic)",
+        "Stir-fry vegetables in order of cooking time needed",
+        "Add soy sauce and seasonings",
+        "Toss everything together",
+        "Serve immediately over hot rice"
+      ],
+      "tags": ["vegetarian", "vegan", "healthy", "asian", "quick"]
+    },
+    {
+      "id": "beef-burger-deluxe-001",
+      "name": "Deluxe Beef Burger",
+      "category": "main-courses",
+      "description": "Premium beef patty with lettuce, tomato, cheese, pickles, and special sauce on a brioche bun",
+      "prep_time_minutes": 15,
+      "cook_time_minutes": 12,
+      "serving_size": 1,
+      "difficulty": "easy",
+      "is_vegetarian": false,
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "allergens": ["gluten", "dairy", "eggs"],
+      "price": 16.00,
+      "cost_to_make": 7.20,
+      "profit_margin": 55.0,
+      "calories": 720,
+      "protein_g": 35,
+      "carbs_g": 48,
+      "fat_g": 42,
+      "fiber_g": 4,
+      "ingredients": [
+        {
+          "ingredient_id": "ground-beef-80-20",
+          "name": "Ground Beef (80/20)",
+          "quantity": 150,
+          "unit": "g",
+          "cost_per_unit": 0.018,
+          "total_cost": 2.70,
+          "category": "meats-seafood"
+        },
+        {
+          "ingredient_id": "brioche-bun",
+          "name": "Brioche Burger Bun",
+          "quantity": 1,
+          "unit": "pieces",
+          "cost_per_unit": 0.80,
+          "total_cost": 0.80,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "cheddar-cheese-slice",
+          "name": "Cheddar Cheese Slice",
+          "quantity": 1,
+          "unit": "pieces",
+          "cost_per_unit": 0.45,
+          "total_cost": 0.45,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "lettuce-iceberg",
+          "name": "Iceberg Lettuce",
+          "quantity": 30,
+          "unit": "g",
+          "cost_per_unit": 0.006,
+          "total_cost": 0.18,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "tomato-slice",
+          "name": "Fresh Tomato",
+          "quantity": 60,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.48,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "red-onion",
+          "name": "Red Onion",
+          "quantity": 20,
+          "unit": "g",
+          "cost_per_unit": 0.005,
+          "total_cost": 0.10,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "pickles-dill",
+          "name": "Dill Pickles",
+          "quantity": 15,
+          "unit": "g",
+          "cost_per_unit": 0.012,
+          "total_cost": 0.18,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "special-sauce",
+          "name": "House Special Sauce",
+          "quantity": 30,
+          "unit": "ml",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.45,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "french-fries",
+          "name": "French Fries",
+          "quantity": 120,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.96,
+          "category": "fruits-vegetables"
+        }
+      ],
+      "instructions": [
+        "Form ground beef into patties, season with salt and pepper",
+        "Cook patties on grill or griddle to desired doneness",
+        "Toast brioche buns lightly",
+        "Add cheese to patty in last minute of cooking",
+        "Assemble burger: bottom bun, sauce, lettuce, patty with cheese, tomato, onion, pickles, top bun",
+        "Serve with crispy french fries",
+        "Add pickle spear on the side"
+      ],
+      "tags": ["american", "comfort-food", "popular", "grilled"]
+    },
+    {
+      "id": "tomato-basil-soup-001",
+      "name": "Creamy Tomato Basil Soup",
+      "category": "soups",
+      "description": "Rich and creamy tomato soup with fresh basil, served with crusty bread",
+      "prep_time_minutes": 10,
+      "cook_time_minutes": 25,
+      "serving_size": 1,
+      "difficulty": "easy",
+      "is_vegetarian": true,
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "allergens": ["dairy"],
+      "price": 9.50,
+      "cost_to_make": 3.20,
+      "profit_margin": 66.3,
+      "calories": 280,
+      "protein_g": 8,
+      "carbs_g": 25,
+      "fat_g": 16,
+      "fiber_g": 4,
+      "ingredients": [
+        {
+          "ingredient_id": "canned-tomatoes-crushed",
+          "name": "Crushed Tomatoes",
+          "quantity": 400,
+          "unit": "g",
+          "cost_per_unit": 0.003,
+          "total_cost": 1.20,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "heavy-cream",
+          "name": "Heavy Cream",
+          "quantity": 100,
+          "unit": "ml",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.80,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "vegetable-broth",
+          "name": "Vegetable Broth",
+          "quantity": 200,
+          "unit": "ml",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.80,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "fresh-basil",
+          "name": "Fresh Basil",
+          "quantity": 15,
+          "unit": "g",
+          "cost_per_unit": 0.020,
+          "total_cost": 0.30,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "yellow-onion",
+          "name": "Yellow Onion",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.32,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "garlic-cloves",
+          "name": "Garlic Cloves",
+          "quantity": 2,
+          "unit": "pieces",
+          "cost_per_unit": 0.05,
+          "total_cost": 0.10,
+          "category": "fruits-vegetables"
+        },
+        {
+          "ingredient_id": "olive-oil-cooking",
+          "name": "Olive Oil",
+          "quantity": 15,
+          "unit": "ml",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.225,
+          "category": "oils-fats"
+        },
+        {
+          "ingredient_id": "sugar-white",
+          "name": "White Sugar",
+          "quantity": 10,
+          "unit": "g",
+          "cost_per_unit": 0.002,
+          "total_cost": 0.02,
+          "category": "spices-condiments"
+        }
+      ],
+      "instructions": [
+        "Sauté diced onion and garlic in olive oil until soft",
+        "Add crushed tomatoes and vegetable broth",
+        "Simmer for 15 minutes",
+        "Blend until smooth using immersion blender",
+        "Stir in heavy cream and fresh basil",
+        "Season with salt, pepper, and a pinch of sugar",
+        "Serve hot with a swirl of cream and fresh basil garnish"
+      ],
+      "tags": ["vegetarian", "comfort-food", "creamy", "classic"]
+    },
+    {
+      "id": "chocolate-cake-001",
+      "name": "Rich Chocolate Cake",
+      "category": "desserts",
+      "description": "Decadent chocolate layer cake with chocolate ganache frosting",
+      "prep_time_minutes": 30,
+      "cook_time_minutes": 35,
+      "serving_size": 1,
+      "difficulty": "hard",
+      "is_vegetarian": true,
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "allergens": ["gluten", "dairy", "eggs"],
+      "price": 8.50,
+      "cost_to_make": 2.80,
+      "profit_margin": 67.1,
+      "calories": 420,
+      "protein_g": 6,
+      "carbs_g": 58,
+      "fat_g": 18,
+      "fiber_g": 4,
+      "ingredients": [
+        {
+          "ingredient_id": "dark-chocolate",
+          "name": "Dark Chocolate",
+          "quantity": 80,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 1.20,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "cake-flour",
+          "name": "Cake Flour",
+          "quantity": 60,
+          "unit": "g",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.24,
+          "category": "grains-starches"
+        },
+        {
+          "ingredient_id": "cocoa-powder",
+          "name": "Cocoa Powder",
+          "quantity": 20,
+          "unit": "g",
+          "cost_per_unit": 0.012,
+          "total_cost": 0.24,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "unsalted-butter",
+          "name": "Unsalted Butter",
+          "quantity": 40,
+          "unit": "g",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.60,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "granulated-sugar",
+          "name": "Granulated Sugar",
+          "quantity": 50,
+          "unit": "g",
+          "cost_per_unit": 0.002,
+          "total_cost": 0.10,
+          "category": "spices-condiments"
+        },
+        {
+          "ingredient_id": "large-egg",
+          "name": "Large Egg",
+          "quantity": 1,
+          "unit": "pieces",
+          "cost_per_unit": 0.35,
+          "total_cost": 0.35,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "vanilla-extract",
+          "name": "Vanilla Extract",
+          "quantity": 5,
+          "unit": "ml",
+          "cost_per_unit": 0.025,
+          "total_cost": 0.125,
+          "category": "spices-condiments"
+        }
+      ],
+      "instructions": [
+        "Melt dark chocolate and butter together",
+        "Whisk in sugar until combined",
+        "Add egg and vanilla extract",
+        "Fold in flour and cocoa powder",
+        "Bake in prepared pan at 350°F for 25-30 minutes",
+        "Cool completely before frosting",
+        "Make ganache frosting and apply smoothly",
+        "Garnish with chocolate shavings"
+      ],
+      "tags": ["dessert", "chocolate", "indulgent", "vegetarian"]
+    },
+    {
+      "id": "coffee-latte-001",
+      "name": "Café Latte",
+      "category": "beverages",
+      "description": "Espresso with steamed milk and a light layer of foam",
+      "prep_time_minutes": 5,
+      "cook_time_minutes": 0,
+      "serving_size": 1,
+      "difficulty": "easy",
+      "is_vegetarian": true,
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "allergens": ["dairy"],
+      "price": 4.50,
+      "cost_to_make": 1.20,
+      "profit_margin": 73.3,
+      "calories": 120,
+      "protein_g": 8,
+      "carbs_g": 12,
+      "fat_g": 4,
+      "fiber_g": 0,
+      "ingredients": [
+        {
+          "ingredient_id": "espresso-shot",
+          "name": "Espresso Shot",
+          "quantity": 30,
+          "unit": "ml",
+          "cost_per_unit": 0.015,
+          "total_cost": 0.45,
+          "category": "beverages"
+        },
+        {
+          "ingredient_id": "whole-milk",
+          "name": "Whole Milk",
+          "quantity": 180,
+          "unit": "ml",
+          "cost_per_unit": 0.004,
+          "total_cost": 0.72,
+          "category": "dairy-eggs"
+        },
+        {
+          "ingredient_id": "coffee-beans",
+          "name": "Coffee Beans",
+          "quantity": 7,
+          "unit": "g",
+          "cost_per_unit": 0.008,
+          "total_cost": 0.056,
+          "category": "beverages"
+        }
+      ],
+      "instructions": [
+        "Grind coffee beans to fine espresso grind",
+        "Extract double shot of espresso",
+        "Steam milk to 150-160°F with microfoam",
+        "Pour steamed milk into espresso",
+        "Create latte art if desired",
+        "Serve immediately in warmed cup"
+      ],
+      "tags": ["coffee", "hot", "dairy", "morning"]
+    }
+  ],
+  "dietary_filters": {
+    "vegetarian": [
+      "caesar-salad-001",
+      "vegetable-stir-fry-001",
+      "tomato-basil-soup-001",
+      "chocolate-cake-001",
+      "coffee-latte-001"
+    ],
+    "vegan": [
+      "vegetable-stir-fry-001"
+    ],
+    "gluten_free": [
+      "salmon-grilled-001",
+      "tomato-basil-soup-001",
+      "coffee-latte-001"
+    ],
+    "dairy_free": [
+      "vegetable-stir-fry-001"
+    ],
+    "low_calorie": [
+      "caesar-salad-001",
+      "vegetable-stir-fry-001",
+      "tomato-basil-soup-001"
+    ]
+  },
+  "cost_analysis": {
+    "highest_profit_margin": {
+      "recipe_id": "coffee-latte-001",
+      "margin": 73.3
+    },
+    "lowest_cost_to_make": {
+      "recipe_id": "coffee-latte-001",
+      "cost": 1.20
+    },
+    "most_expensive": {
+      "recipe_id": "salmon-grilled-001",
+      "price": 22.00
+    },
+    "average_profit_margin": 58.7,
+    "total_recipes": 11
+  }
+}
