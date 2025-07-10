@@ -5,6 +5,7 @@ import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import AIAssistant from './pages/AIAssistant'
 import MenuDataImporter from './pages/MenuDataImporter'
+import MenuRecipes from './pages/MenuRecipes'
 import Forecasting from './pages/Forecasting'
 import RestaurantInventory from './pages/RestaurantInventory'
 import Inventory from './pages/Inventory'
@@ -40,6 +41,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="ai-assistant" element={<AIAssistant />} />
             <Route path="menu-data-import" element={<MenuDataImporter />} />
+            <Route path="menu-recipes" element={<MenuRecipes />} />
             <Route path="forecasting" element={<Forecasting />} />
             <Route path="restaurant-inventory" element={<RestaurantInventory />} />
             <Route path="inventory" element={<Inventory />} />
