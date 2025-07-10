@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   BarChart3,
   DollarSign,
@@ -19,6 +20,7 @@ import {
   Minus
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { addAllSampleData } from '../utils/sampleData'
 
 interface DashboardMetrics {
   todaySales: number
@@ -52,9 +54,14 @@ interface DashboardMetrics {
 
 const Dashboard: React.FC = () => {
   const { currentUser } = useAuth()
+  const navigate = useNavigate()
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedPeriod, setSelectedPeriod] = useState('7d')
+  const [showNewSaleModal, setShowNewSaleModal] = useState(false)
+  const [showAddStockModal, setShowAddStockModal] = useState(false)
+  const [showWasteModal, setShowWasteModal] = useState(false)
+  const [addingSampleData, setAddingSampleData] = useState(false)
 
   useEffect(() => {
     fetchDashboardMetrics()
@@ -125,6 +132,32 @@ const Dashboard: React.FC = () => {
     }
   }
 
+  const handleAddSampleData = async () => {
+    if (!currentUser) {
+      alert('Please log in to add sample data')
+      return
+    }
+
+    if (confirm('This will add sample inventory items, menu items, and sales data. Continue?')) {
+      try {
+        setAddingSampleData(true)
+        const result = await addAllSampleData(currentUser.uid)
+        
+        if (result.success) {
+          alert(result.message)
+          await fetchDashboardMetrics() // Refresh the dashboard
+        } else {
+          alert(result.message)
+        }
+      } catch (error) {
+        console.error('Error adding sample data:', error)
+        alert('Failed to add sample data. Please try again.')
+      } finally {
+        setAddingSampleData(false)
+      }
+    }
+  }
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
@@ -179,6 +212,14 @@ const Dashboard: React.FC = () => {
               <option value="30d">Last 30 days</option>
               <option value="90d">Last 90 days</option>
             </select>
+            <button
+              onClick={handleAddSampleData}
+              disabled={addingSampleData}
+              className="btn-secondary flex items-center space-x-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{addingSampleData ? 'Adding...' : 'Add Sample Data'}</span>
+            </button>
             <button
               onClick={fetchDashboardMetrics}
               className="btn-primary flex items-center space-x-2"
@@ -272,27 +313,45 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <button className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+            <button 
+              onClick={() => setShowNewSaleModal(true)}
+              className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+            >
               <Plus className="h-6 w-6 text-blue-600 mb-2" />
               <span className="text-sm font-medium text-blue-900">New Sale</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+            <button 
+              onClick={() => setShowAddStockModal(true)}
+              className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+            >
               <Package className="h-6 w-6 text-green-600 mb-2" />
               <span className="text-sm font-medium text-green-900">Add Stock</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+            <button 
+              onClick={() => navigate('/menu-recipes')}
+              className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+            >
               <ChefHat className="h-6 w-6 text-purple-600 mb-2" />
               <span className="text-sm font-medium text-purple-900">New Menu Item</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+            <button 
+              onClick={() => navigate('/supplier-ordering')}
+              className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+            >
               <ShoppingCart className="h-6 w-6 text-orange-600 mb-2" />
               <span className="text-sm font-medium text-orange-900">Place Order</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+            <button 
+              onClick={() => setShowWasteModal(true)}
+              className="flex flex-col items-center p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+            >
               <Trash2 className="h-6 w-6 text-red-600 mb-2" />
               <span className="text-sm font-medium text-red-900">Record Waste</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <button 
+              onClick={() => navigate('/pos-analytics')}
+              className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
               <FileText className="h-6 w-6 text-gray-600 mb-2" />
               <span className="text-sm font-medium text-gray-900">View Reports</span>
             </button>
@@ -430,7 +489,10 @@ const Dashboard: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900">Sales Analytics</h3>
             </div>
             <p className="text-gray-600 mb-4">View detailed sales reports, trends, and forecasting</p>
-            <button className="btn-primary w-full">
+            <button 
+              onClick={() => navigate('/pos-analytics')}
+              className="btn-primary w-full"
+            >
               Open Sales Analytics
             </button>
           </div>
@@ -443,7 +505,10 @@ const Dashboard: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900">Inventory Management</h3>
             </div>
             <p className="text-gray-600 mb-4">Track stock levels, manage products, and view alerts</p>
-            <button className="btn-primary w-full">
+            <button 
+              onClick={() => navigate('/inventory')}
+              className="btn-primary w-full"
+            >
               Manage Inventory
             </button>
           </div>
@@ -456,11 +521,260 @@ const Dashboard: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900">Menu & Recipes</h3>
             </div>
             <p className="text-gray-600 mb-4">Manage menu items, recipes, and cost analysis</p>
-            <button className="btn-primary w-full">
+            <button 
+              onClick={() => navigate('/menu-recipes')}
+              className="btn-primary w-full"
+            >
               Manage Menu
             </button>
           </div>
         </div>
+
+        {/* Quick Action Modals */}
+        {/* New Sale Modal */}
+        {showNewSaleModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Record New Sale</h3>
+                  <button
+                    onClick={() => setShowNewSaleModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <form className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Item
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="e.g., Cappuccino"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Quantity
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="1"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowNewSaleModal(false)}
+                      className="btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        alert('Sale recorded successfully!')
+                        setShowNewSaleModal(false)
+                      }}
+                    >
+                      Record Sale
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Stock Modal */}
+        {showAddStockModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Add Stock</h3>
+                  <button
+                    onClick={() => setShowAddStockModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Inventory Item
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., Coffee Beans"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Quantity Added
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Unit
+                      </label>
+                      <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="l">l</option>
+                        <option value="ml">ml</option>
+                        <option value="pcs">pcs</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStockModal(false)}
+                      className="btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        alert('Stock updated successfully!')
+                        setShowAddStockModal(false)
+                      }}
+                    >
+                      Add Stock
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Record Waste Modal */}
+        {showWasteModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Record Waste</h3>
+                  <button
+                    onClick={() => setShowWasteModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Item
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., Expired Milk"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Quantity Wasted
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Unit
+                      </label>
+                      <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="l">l</option>
+                        <option value="ml">ml</option>
+                        <option value="pcs">pcs</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Reason
+                    </label>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <option value="expired">Expired</option>
+                      <option value="damaged">Damaged</option>
+                      <option value="spoiled">Spoiled</option>
+                      <option value="overproduction">Overproduction</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowWasteModal(false)}
+                      className="btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        alert('Waste recorded successfully!')
+                        setShowWasteModal(false)
+                      }}
+                    >
+                      Record Waste
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
