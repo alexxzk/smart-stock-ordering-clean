@@ -15,43 +15,12 @@ import {
   CheckCircle
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-
-interface OrderTemplateItem {
-  id: string
-  productName: string
-  defaultPackageSize: string
-  defaultQuantity: number
-  unit: string
-  lastPrice: number
-  averageMonthlyUsage: number
-  category: string
-  essential: boolean
-}
-
-interface ContactInfo {
-  rep: string
-  email: string
-  phone: string
-}
-
-interface APIIntegration {
-  enabled: boolean
-  type: string
-  credentials?: any
-}
-
-interface SupplierOrderTemplate {
-  id?: string
-  supplierId: string
-  supplierName: string
-  items: OrderTemplateItem[]
-  notes: string
-  preferredDeliveryDays: string[]
-  minimumOrderValue: number
-  contactInfo: ContactInfo
-  lastOrderDate?: string
-  apiIntegration?: APIIntegration
-}
+import type { 
+  SupplierOrderTemplate, 
+  OrderTemplateItem, 
+  ContactInfo, 
+  APIIntegration 
+} from '../types/supplier'
 
 interface SupplierTemplateManagerProps {
   isOpen: boolean
@@ -403,6 +372,7 @@ export default function SupplierTemplateManager({
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
                     apiIntegration: { 
+                      type: 'email',
                       ...prev.apiIntegration, 
                       enabled: e.target.checked 
                     }
@@ -422,6 +392,7 @@ export default function SupplierTemplateManager({
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
                       apiIntegration: { 
+                        enabled: false,
                         ...prev.apiIntegration, 
                         type: e.target.value 
                       }

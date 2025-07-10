@@ -24,60 +24,12 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import SupplierTemplateManager from '../components/SupplierTemplateManager'
-
-// Types for Supplier Ordering
-interface SupplierOrderTemplate {
-  id: string
-  supplierId: string
-  supplierName: string
-  items: OrderTemplateItem[]
-  notes: string
-  preferredDeliveryDays: string[]
-  minimumOrderValue: number
-  contactInfo: {
-    rep: string
-    email: string
-    phone: string
-  }
-  lastOrderDate?: string
-  apiIntegration?: {
-    enabled: boolean
-    type: 'ordermentum' | 'bidfood' | 'pfd' | 'coles' | 'costco' | 'email'
-    credentials?: any
-  }
-}
-
-interface OrderTemplateItem {
-  id: string
-  productName: string
-  defaultPackageSize: string
-  defaultQuantity: number
-  unit: string
-  lastPrice?: number
-  averageMonthlyUsage?: number
-  category: string
-  essential: boolean
-}
-
-interface SmartOrderSuggestion {
-  itemId: string
-  productName: string
-  suggestedQuantity: number
-  reason: string
-  confidence: number
-  currentStock: number
-  averageUsage: number
-  trendDirection: 'up' | 'down' | 'stable'
-}
-
-interface BatchOrder {
-  suppliers: string[]
-  orderDate: string
-  deliveryDate: string
-  items: { [supplierId: string]: OrderTemplateItem[] }
-  totalValue: number
-  status: 'draft' | 'sent' | 'confirmed' | 'delivered'
-}
+import type { 
+  SupplierOrderTemplate, 
+  OrderTemplateItem, 
+  SmartOrderSuggestion, 
+  BatchOrder 
+} from '../types/supplier'
 
 export default function SupplierOrdering() {
   const { currentUser } = useAuth()
@@ -411,7 +363,7 @@ export default function SupplierOrdering() {
               {templates.map((template) => (
                 <button
                   key={template.id}
-                  onClick={() => setSelectedTemplate(template.id)}
+                  onClick={() => setSelectedTemplate(template.id || '')}
                   className={`w-full text-left p-4 rounded-lg border transition-all ${
                     selectedTemplate === template.id
                       ? 'border-blue-500 bg-blue-50'

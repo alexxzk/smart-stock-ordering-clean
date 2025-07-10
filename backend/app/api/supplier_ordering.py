@@ -363,7 +363,8 @@ class EmailService:
             # Send email
             server = smtplib.SMTP(smtp_server, smtp_port)
             server.starttls()
-            server.login(smtp_username, smtp_password)
+            if smtp_username and smtp_password:
+                server.login(smtp_username, smtp_password)
             server.send_message(msg)
             server.quit()
             
@@ -515,7 +516,7 @@ class PDFService:
             if order_data.get('notes'):
                 story.append(Spacer(1, 20))
                 story.append(Paragraph("Notes:", styles['Heading3']))
-                story.append(Paragraph(order_data.get('notes'), styles['Normal']))
+                story.append(Paragraph(str(order_data.get('notes', '')), styles['Normal']))
             
             # Build PDF
             doc.build(story)
@@ -560,6 +561,14 @@ async def get_current_user(request: Request):
     # This should be set by the auth middleware in main.py
     user = getattr(request.state, 'user', None)
     if not user:
+        # For development, return a mock user if DEV_MODE is enabled
+        import os
+        if os.getenv("DEV_MODE", "false").lower() == "true":
+            return {
+                "uid": "dev-user-123",
+                "email": "dev@example.com",
+                "name": "Development User"
+            }
         raise HTTPException(status_code=401, detail="Authentication required")
     return user
 

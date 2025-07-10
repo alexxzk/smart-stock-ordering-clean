@@ -102,6 +102,31 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+# Middleware to set user on request state
+@app.middleware("http")
+async def auth_middleware(request, call_next):
+    """Set user on request state from auth token"""
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        token = auth_header.split(' ')[1]
+        try:
+            if DEV_MODE:
+                # Return a mock user in development mode
+                request.state.user = {
+                    "uid": "dev-user-123",
+                    "email": "dev@example.com",
+                    "name": "Development User"
+                }
+            else:
+                decoded_token = auth.verify_id_token(token)
+                request.state.user = decoded_token
+        except Exception:
+            # Invalid token, don't set user
+            pass
+    
+    response = await call_next(request)
+    return response
+
 # Include routers
 app.include_router(auth_router.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(
@@ -149,8 +174,7 @@ app.include_router(
 app.include_router(
     supplier_ordering_router.router, 
     prefix="/api/supplier-ordering", 
-    tags=["Supplier Ordering"],
-    dependencies=[Depends(verify_token)]
+    tags=["Supplier Ordering"]
 )
 app.include_router(
     users_router.router, 
