@@ -24,6 +24,9 @@ from app.api import suppliers as suppliers_router
 from app.api import supplier_integrations as supplier_integrations_router
 from app.api import supplier_ordering as supplier_ordering_router
 from app.api import users as users_router
+from app.api import inventory_management as inventory_management_router
+from app.api import sales_tracking as sales_tracking_router
+from app.api import menu_recipe_management as menu_recipe_router
 from app.routes import integrations as integrations_router
 from app.firebase_init import get_firestore_client
 from app.api.cache import router as cache_router
@@ -193,6 +196,21 @@ app.include_router(
     prefix="/api/cache", 
     tags=["Cache Management"],
     dependencies=[Depends(verify_token)]
+)
+app.include_router(
+    inventory_management_router.router, 
+    prefix="/api/inventory-management", 
+    tags=["Inventory Management"]
+)
+app.include_router(
+    sales_tracking_router.router, 
+    prefix="/api/sales-tracking", 
+    tags=["Sales Tracking"]
+)
+app.include_router(
+    menu_recipe_router.router, 
+    prefix="/api/menu-recipe", 
+    tags=["Menu & Recipe Management"]
 )
 
 @app.get("/")
