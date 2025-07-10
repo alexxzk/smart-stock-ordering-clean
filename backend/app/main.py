@@ -22,6 +22,7 @@ from app.api import ordering as ordering_router
 from app.api import excel_processor as excel_router
 from app.api import suppliers as suppliers_router
 from app.api import supplier_integrations as supplier_integrations_router
+from app.api import supplier_ordering as supplier_ordering_router
 from app.api import users as users_router
 from app.routes import integrations as integrations_router
 from app.firebase_init import get_firestore_client
@@ -143,6 +144,12 @@ app.include_router(
     supplier_integrations_router.router, 
     prefix="/api/supplier-integrations", 
     tags=["Supplier Integrations"],
+    dependencies=[Depends(verify_token)]
+)
+app.include_router(
+    supplier_ordering_router.router, 
+    prefix="/api/supplier-ordering", 
+    tags=["Supplier Ordering"],
     dependencies=[Depends(verify_token)]
 )
 app.include_router(

@@ -13,6 +13,7 @@ import Categories from './pages/Categories'
 import Suppliers from './pages/Suppliers'
 import Integrations from './pages/Integrations'
 import SupplierIntegrations from './pages/SupplierIntegrations'
+import SupplierOrdering from './pages/SupplierOrdering'
 import POSAnalytics from './pages/POSAnalytics'
 import Orders from './pages/Orders'
 import Login from './pages/Login'
@@ -47,6 +48,7 @@ function App() {
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="integrations" element={<Integrations />} />
             <Route path="supplier-integrations" element={<SupplierIntegrations />} />
+            <Route path="supplier-ordering" element={<SupplierOrdering />} />
             <Route path="pos-analytics" element={<POSAnalytics />} />
             <Route path="orders" element={<Orders />} />
           </Route>
